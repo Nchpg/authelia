@@ -91,7 +91,10 @@ a {
     position: relative;
 }
 
-/* Tile with the padlock shackle (a ring whose lower half is hidden by the body). */
+/*
+ * Tile with the padlock shackle (a ring whose lower half is hidden by the body).
+ * Every size is in rem so the glyph stays aligned with the tile at any font size.
+ */
 .min-h-\[90vh\] div:has(> svg.w-16)::before {
     content: "";
     display: block;
@@ -100,7 +103,12 @@ a {
     margin: 0.25rem auto 0.75rem;
     border-radius: 1rem;
     background:
-        radial-gradient(circle at 50% 22px, transparent 0 4.5px, var(--primary-foreground) 5px 7.5px, transparent 8px),
+        radial-gradient(
+            circle at 50% 1.375rem,
+            transparent 0 0.28rem,
+            var(--primary-foreground) 0.31rem 0.47rem,
+            transparent 0.5rem
+        ),
         linear-gradient(
             135deg,
             color-mix(in oklch, var(--primary) 80%, white),
@@ -116,14 +124,14 @@ a {
 .min-h-\[90vh\] div:has(> svg.w-16)::after {
     content: "";
     position: absolute;
-    top: calc(0.5rem + 0.25rem + 25px);
+    top: calc(0.5rem + 0.25rem + 1.5625rem);
     left: 50%;
-    width: 24px;
-    height: 18px;
-    border-radius: 5px;
+    width: 1.5rem;
+    height: 1.125rem;
+    border-radius: 0.3125rem;
     background:
-        linear-gradient(var(--primary), var(--primary)) 50% 11px / 2px 4px no-repeat,
-        radial-gradient(circle at 50% 8px, var(--primary) 0 2.5px, transparent 3px),
+        linear-gradient(var(--primary), var(--primary)) 50% 0.6875rem / 0.125rem 0.25rem no-repeat,
+        radial-gradient(circle at 50% 0.5rem, var(--primary) 0 0.16rem, transparent 0.19rem),
         var(--primary-foreground);
     transform: translateX(-50%);
 }
