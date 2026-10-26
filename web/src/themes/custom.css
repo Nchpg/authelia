@@ -618,6 +618,12 @@ div:has(> .min-h-\[90vh\]) {
     font-weight: 500;
 }
 
+/* Failed: no fixed height, the message and "Retry" set the height. */
+#\32 fa-container:has(.failure-icon:not(.hidden *)) {
+    height: auto;
+    padding-block: 1.25rem 0.25rem;
+}
+
 /* Failed: the wrapper of the icon and the "Retry" button is flattened onto the grid. */
 #\32 fa-container:has(.failure-icon:not(.hidden *)) > div > div.mb-4 {
     display: contents;
@@ -781,6 +787,23 @@ div:has(> .min-h-\[90vh\]) {
 
 #register-link:hover {
     text-decoration: none;
+}
+
+/*
+ * "Manage devices" (a device is registered) is a secondary action: neutral
+ * outlined, so the method's own action ("Retry") stays the only solid one.
+ */
+#\32 fa-container:not(.state-not-registered) ~ #register-link {
+    margin-top: 1.25rem;
+    border: 1px solid var(--border);
+    background-color: var(--muted);
+    color: var(--foreground);
+    box-shadow: none;
+}
+
+#\32 fa-container:not(.state-not-registered) ~ #register-link:hover {
+    border-color: var(--theme-hover-border);
+    background-color: color-mix(in oklch, var(--foreground) 5%, var(--muted));
 }
 
 #selection-link {
@@ -1112,13 +1135,9 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6
 
 /* Small screens: keep a gutter so the cards don't touch the edges. */
 @media (max-width: 639px) {
+    /* The top bar is taller than the space the page keeps for it (56px). */
     nav.fixed.bg-primary ~ main {
-        padding-inline: 0.75rem;
-        padding-bottom: 1rem;
-    }
-
-    nav.fixed.bg-primary ~ main .grid.gap-4:not([data-slot="card-content"]) {
-        padding-top: 0.75rem;
+        padding: 4.5rem 0.75rem 1rem;
     }
 
     nav.fixed.bg-primary ~ main [data-slot="card-content"] {
