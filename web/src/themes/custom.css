@@ -483,9 +483,16 @@ nav.fixed.bg-primary ~ main p {
     font-size: 0.9375rem;
 }
 
-/* Settings > Security: account details as soft rows in a wider card. */
+/* Settings > Security: one even padding around the account details. */
 nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) {
     width: min(28rem, 100%);
+    padding: 1.75rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) > div,
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) > div > div {
+    margin: 0;
+    padding: 0;
 }
 
 nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rounded.border {
@@ -498,6 +505,97 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
 
 #change-password-button {
     margin-top: 0.5rem;
+}
+
+/*
+ * Settings > Two-Factor Authentication: each panel is a compact row with the
+ * title and description on the left and the "Add" button on the right.
+ */
+:is(#one-time-password-panel, #webauthn-credentials-panel) {
+    padding-block: 0;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 1.5rem;
+    row-gap: 0.375rem;
+    padding: 1.5rem 1.75rem;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > * {
+    grid-column: 1 / -1;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* The button spans the description row only when there is a description. */
+:is(#one-time-password-panel, #webauthn-credentials-panel)
+    > [data-slot="card-content"]:has(> :nth-child(3) > p)
+    > :nth-child(2) {
+    grid-row: 1 / span 2;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(3):has(> p) {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel)
+    > [data-slot="card-content"]
+    > :nth-child(n + 3):not(:has(> p)) {
+    margin-top: 0.75rem;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) h5 {
+    font-size: 1.125rem;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) p.text-muted-foreground {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+/* Settings > Two-Factor Authentication > Options: same padding as the other panels. */
+nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) {
+    padding-block: 0;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) > [data-slot="card-content"] {
+    padding: 1.5rem 1.75rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) .grid.p-4 {
+    padding: 0;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) h5 {
+    font-size: 1.125rem;
+}
+
+/* Settings on small screens: keep a gutter so the cards don't touch the edges. */
+@media (max-width: 639px) {
+    nav.fixed.bg-primary ~ main {
+        padding-inline: 0.75rem;
+        padding-bottom: 1rem;
+    }
+
+    nav.fixed.bg-primary ~ main .grid.gap-4 {
+        padding-top: 0.75rem;
+    }
+
+    :is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"],
+    nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) > [data-slot="card-content"] {
+        padding: 1.25rem;
+    }
 }
 
 /* Second factor: a single card, no nested frames. */
