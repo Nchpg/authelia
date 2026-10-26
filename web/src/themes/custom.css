@@ -515,8 +515,8 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
 }
 
 /*
- * "Logout | Methods": equal-width buttons spanning the card, with a colored
- * hover per action (the literal pipes are hidden with font-size 0).
+ * "Logout | Methods": equal-width neutral buttons spanning the card (the
+ * literal pipes are hidden with font-size 0).
  */
 #second-factor-stage div:has(> #logout-button) {
     display: flex;
@@ -532,7 +532,6 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
-    --action: var(--primary);
     height: 2.5rem;
     padding-inline: 1rem;
     border: 1px solid var(--border);
@@ -545,14 +544,9 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
     box-shadow: none;
 }
 
-#second-factor-stage div:has(> #logout-button) > #logout-button {
-    --action: var(--destructive);
-}
-
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
     border-color: color-mix(in oklch, var(--foreground) 18%, var(--border));
     background-color: color-mix(in oklch, var(--foreground) 5%, var(--muted));
-    color: var(--action);
 }
 
 /* The hover tooltips on these buttons only repeat their label: hide them on this page. */
@@ -561,7 +555,7 @@ body:has(#second-factor-stage) [data-slot="tooltip-content"] {
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):focus-visible {
-    outline: 2px solid color-mix(in oklch, var(--action) 60%, transparent);
+    outline: 2px solid color-mix(in oklch, var(--ring) 60%, transparent);
     outline-offset: 2px;
 }
 
