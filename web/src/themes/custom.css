@@ -504,10 +504,47 @@ a {
     background-color: var(--muted);
 }
 
-/* Second factor status icons (success / failure) at a calmer size. */
+/*
+ * Second factor status icons: the glyph alone (no outer circle, normal
+ * stroke) inside a tinted round badge, red for failure and green for success.
+ */
 #\32 fa-container :is(.failure-icon, .success-icon) {
+    --status: var(--destructive);
     width: 3.5rem;
     height: 3.5rem;
+    padding: 0.75rem;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--status) 12%, transparent);
+    color: var(--status);
+    stroke-width: 1.25;
+}
+
+#\32 fa-container .success-icon {
+    --status: var(--success);
+}
+
+/* The glyph is drawn small (to fit in its circle): enlarge it around the center. */
+#\32 fa-container :is(.failure-icon, .success-icon) > path {
+    scale: 2;
+}
+
+#\32 fa-container :is(.failure-icon, .success-icon) > circle {
+    display: none;
+}
+
+/* "Retry" under a failed method: a small neutral outlined button. */
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"] {
+    height: 2.25rem;
+    margin-top: 0.75rem;
+    padding-inline: 1rem;
+    border: 1px solid var(--input);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"]:hover {
+    background-color: var(--muted);
 }
 
 /* ---------- Settings top bar: translucent instead of a solid color ---------- */
