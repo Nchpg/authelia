@@ -550,9 +550,14 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
-    border-color: color-mix(in oklch, var(--action) 45%, transparent);
-    background-color: color-mix(in oklch, var(--action) 10%, transparent);
+    border-color: color-mix(in oklch, var(--foreground) 18%, var(--border));
+    background-color: color-mix(in oklch, var(--foreground) 5%, var(--muted));
     color: var(--action);
+}
+
+/* The hover tooltips on these buttons only repeat their label: hide them on this page. */
+body:has(#second-factor-stage) [data-slot="tooltip-content"] {
+    display: none;
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):focus-visible {
