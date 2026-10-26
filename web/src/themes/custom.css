@@ -130,8 +130,14 @@ a {
     height: 1.125rem;
     border-radius: 0.25rem;
     background:
-        linear-gradient(var(--primary), var(--primary)) 50% 0.5rem / 0.125rem 0.3rem no-repeat,
-        radial-gradient(circle at 50% 0.45rem, var(--primary) 0 0.17rem, transparent 0.2rem),
+        linear-gradient(
+                to right,
+                transparent calc(50% - 0.0625rem),
+                var(--primary) calc(50% - 0.0625rem) calc(50% + 0.0625rem),
+                transparent calc(50% + 0.0625rem)
+            )
+            0 0.5rem / 100% 0.3rem no-repeat,
+        radial-gradient(circle at 50% 0.45rem, var(--primary) 0 0.17rem, transparent calc(0.17rem + 0.5px)),
         var(--primary-foreground);
     transform: translateX(-50%);
 }
@@ -206,13 +212,18 @@ a {
 #\32 fa-container.state-not-registered p {
     margin: 0;
     color: var(--muted-foreground);
-    font-size: 0.875rem;
-    line-height: 1.45;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.min-h-\[90vh\] h6:has(+ #\32 fa-container.state-not-registered) {
+    display: none;
 }
 
 #\32 fa-container.state-not-registered p:first-of-type {
     margin-bottom: 0.25rem;
     color: var(--foreground);
+    font-size: 1.0625rem;
     font-weight: 500;
 }
 
@@ -503,33 +514,31 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
     border-radius: 0;
 }
 
-/* "Logout | Methods": plain text links with a thin divider (the literal pipes are hidden with font-size 0). */
+/* "Logout | Methods": small outlined buttons (the literal pipes are hidden with font-size 0). */
 #second-factor-stage div:has(> #logout-button) {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
     font-size: 0;
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
-    height: 1.75rem;
-    padding-inline: 0.875rem;
-    border-radius: 0;
-    background: none;
-    color: var(--muted-foreground);
+    height: 2.25rem;
+    padding-inline: 1rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
     font-size: 0.875rem;
     font-weight: 500;
     letter-spacing: 0;
-    box-shadow: none;
-}
-
-#second-factor-stage div:has(> #logout-button) > * + * {
-    border-left: 1px solid var(--border);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
-    background: none;
-    color: var(--foreground);
+    border-color: color-mix(in oklch, var(--foreground) 30%, var(--input));
+    background-color: var(--muted);
 }
 
 /* ---------- Scrollbars ---------- */
