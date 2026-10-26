@@ -79,13 +79,19 @@ a {
 }
 
 /*
- * The default account silhouette is replaced by a gradient tile drawn in pure
- * CSS (no image: the CSP blocks data: URIs). A custom logo.png is untouched.
+ * The default account silhouette is replaced by a padlock on a gradient tile,
+ * drawn in pure CSS (no image: the CSP blocks data: URIs). A custom logo.png
+ * is untouched.
  */
 .min-h-\[90vh\] svg.w-16 {
     display: none;
 }
 
+.min-h-\[90vh\] div:has(> svg.w-16) {
+    position: relative;
+}
+
+/* Tile with the padlock shackle (a ring whose lower half is hidden by the body). */
 .min-h-\[90vh\] div:has(> svg.w-16)::before {
     content: "";
     display: block;
@@ -94,8 +100,7 @@ a {
     margin: 0.25rem auto 0.75rem;
     border-radius: 1rem;
     background:
-        radial-gradient(circle at 50% 37%, var(--primary-foreground) 0 0.45rem, transparent calc(0.45rem + 1px)),
-        radial-gradient(ellipse 0.95rem 0.85rem at 50% 85%, var(--primary-foreground) 0 97%, transparent 100%),
+        radial-gradient(circle at 50% 22px, transparent 0 4.5px, var(--primary-foreground) 5px 7.5px, transparent 8px),
         linear-gradient(
             135deg,
             color-mix(in oklch, var(--primary) 80%, white),
@@ -105,6 +110,22 @@ a {
     box-shadow:
         0 1px 0 oklch(1 0 0 / 0.25) inset,
         0 8px 24px -8px color-mix(in oklch, var(--primary) 70%, transparent);
+}
+
+/* Padlock body with its keyhole, laid over the tile. */
+.min-h-\[90vh\] div:has(> svg.w-16)::after {
+    content: "";
+    position: absolute;
+    top: calc(0.5rem + 0.25rem + 25px);
+    left: 50%;
+    width: 24px;
+    height: 18px;
+    border-radius: 5px;
+    background:
+        linear-gradient(var(--primary), var(--primary)) 50% 11px / 2px 4px no-repeat,
+        radial-gradient(circle at 50% 8px, var(--primary) 0 2.5px, transparent 3px),
+        var(--primary-foreground);
+    transform: translateX(-50%);
 }
 
 /* Page title and subtitle. */
