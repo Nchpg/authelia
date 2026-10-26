@@ -64,7 +64,7 @@ a {
 
 /* ---------- Login / minimal layouts: present the form as a centered card ---------- */
 .min-h-\[90vh\] > div:first-child {
-    padding: 2.25rem 2rem 1.5rem;
+    padding: 2.75rem 2.5rem 2.25rem;
     border: 1px solid var(--border);
     border-radius: calc(var(--radius) + 6px);
     background-color: var(--card);
@@ -139,7 +139,8 @@ a {
 /* Page title and subtitle. */
 .min-h-\[90vh\] h5 {
     margin-top: 0.5rem;
-    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
     font-weight: 600;
     letter-spacing: -0.02em;
 }
@@ -358,6 +359,121 @@ nav.fixed.bg-primary .text-primary-foreground {
 nav.fixed.bg-primary h6 {
     font-weight: 600;
     letter-spacing: -0.01em;
+}
+
+/* ---------- Pointer cursor on interactive elements ---------- */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="checkbox"],
+[role="radio"],
+[role="switch"],
+[role="menuitem"],
+[role="tab"],
+a[href],
+label[for],
+select,
+summary {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+/* ---------- Sizing and spacing ---------- */
+
+/* A slightly wider login card. */
+.min-h-\[90vh\] > div.max-w-\[444px\] {
+    max-width: 30rem;
+}
+
+/* Taller, bolder buttons (default size). */
+:is([data-slot="button"], .inline-flex.uppercase).h-10 {
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+/* Login form: even vertical rhythm instead of negative margins. */
+#form-login > .grid {
+    gap: 1.25rem;
+}
+
+#form-login .-my-2 {
+    margin-block: 0;
+}
+
+#form-login [data-slot="label"],
+#form-login #reset-password-button,
+#form-login #register-button {
+    font-size: 0.9375rem;
+}
+
+#form-login #reset-password-button,
+#form-login #register-button {
+    padding-block: 0.25rem;
+    font-weight: 500;
+}
+
+#form-login #sign-in-button {
+    height: 3rem;
+    font-size: 1rem;
+}
+
+/* Floating inputs: a bit more room for the text. */
+[data-slot="floating-input"] {
+    height: 3.5rem;
+    font-size: 1rem;
+}
+
+/* Reset password and other minimal forms: breathing room between rows. */
+[id^="form-reset-password"] .grid {
+    gap: 1.25rem;
+}
+
+/* Second factor buttons ("Logout | Methods"). */
+#second-factor-stage [data-slot="button"],
+#second-factor-stage .inline-flex.uppercase {
+    font-size: 0.9375rem;
+}
+
+/* Settings: centered content column and roomier cards. */
+nav.fixed.bg-primary ~ main {
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"].p-4 {
+    padding: 1.5rem;
+}
+
+nav.fixed.bg-primary ~ main h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+nav.fixed.bg-primary ~ main p {
+    font-size: 0.9375rem;
+}
+
+/* Settings > Security: account details as soft rows in a wider card. */
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) {
+    width: min(28rem, 100%);
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rounded.border {
+    margin-bottom: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-color: var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+}
+
+#change-password-button {
+    margin-top: 0.5rem;
 }
 
 /* ---------- Scrollbars ---------- */
