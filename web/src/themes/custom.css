@@ -411,6 +411,35 @@ a {
     background-color: color-mix(in oklch, var(--destructive) 88%, black);
 }
 
+/* Dialog steps with an info icon: the icon beside its text, the form below. */
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 0.875rem;
+    text-align: left;
+}
+
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > * {
+    grid-column: 1 / -1;
+}
+
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > .py-8 {
+    grid-column: 1;
+    padding-block: 1rem;
+}
+
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > p.pb-8 {
+    grid-column: 2;
+    padding-block: 1rem;
+}
+
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) .information-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.625rem;
+}
+
 /* Dialog bodies: wider narrow dialogs, compact spacing, small icon badges. */
 [data-slot="dialog-content"].sm\:max-w-xs {
     max-width: min(26rem, calc(100% - 2rem));
@@ -532,10 +561,26 @@ a {
     display: none;
 }
 
+/* Failed method: the status badge and the "Retry" button side by side. */
+#\32 fa-container div.mb-4:has(.failure-icon) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+}
+
+#\32 fa-container div.mb-4:has(.failure-icon) > div.w-full {
+    width: auto;
+}
+
+#\32 fa-container div.mb-4:has(.failure-icon) #rate-limit-countdown {
+    order: 3;
+}
+
 /* "Retry" under a failed method: a small neutral outlined button. */
 #\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"] {
     height: 2.25rem;
-    margin-top: 0.75rem;
     padding-inline: 1rem;
     border: 1px solid var(--input);
     color: var(--foreground);
