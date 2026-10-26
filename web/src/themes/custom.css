@@ -930,24 +930,21 @@ nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > p {
 }
 
 /*
- * Settings > Two-Factor Authentication: "WebAuthn disabled" panel. The app
- * briefly renders it while the configuration loads, so it only fades in after
- * a short delay: never seen during a normal load, still shown when WebAuthn
- * really is disabled. Styled like the other panels.
+ * Settings > Two-Factor Authentication: "WebAuthn disabled" panel. While the
+ * configuration loads, the app briefly renders this panel alone. Once loaded,
+ * the One-Time Password or the Options panel is always next to it, so it is
+ * hidden while it is the only panel (no flash, whatever the load time).
+ * Styled like the other panels.
  */
-@keyframes theme-delayed-appear {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
 nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) {
     padding-block: 0;
-    animation: theme-delayed-appear 200ms ease-out 600ms both;
+}
+
+nav.fixed.bg-primary
+    ~ main
+    .grid:not(:has(#one-time-password-panel, [id^="method-"]))
+    [data-slot="card"]:has(.col-span-12.text-center > h6) {
+    display: none;
 }
 
 nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) > [data-slot="card-content"] {
