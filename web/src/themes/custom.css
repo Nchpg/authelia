@@ -456,7 +456,7 @@ a {
 }
 
 #methods-dialog .method-option > :is([data-slot="button"], .inline-flex.uppercase):hover {
-    border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
+    border-color: color-mix(in oklch, var(--foreground) 18%, var(--border));
     background-color: var(--muted);
 }
 
