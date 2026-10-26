@@ -73,11 +73,38 @@ a {
 }
 
 /* Logo above the title. */
-.min-h-\[90vh\] svg.w-16,
 .min-h-\[90vh\] img.w-16 {
     width: 3rem;
     height: 3rem;
-    opacity: 0.9;
+}
+
+/*
+ * The default account silhouette is replaced by a gradient tile drawn in pure
+ * CSS (no image: the CSP blocks data: URIs). A custom logo.png is untouched.
+ */
+.min-h-\[90vh\] svg.w-16 {
+    display: none;
+}
+
+.min-h-\[90vh\] div:has(> svg.w-16)::before {
+    content: "";
+    display: block;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0.25rem auto 0.75rem;
+    border-radius: 1rem;
+    background:
+        radial-gradient(circle at 50% 39%, var(--primary-foreground) 0 0.45rem, transparent calc(0.45rem + 1px)),
+        radial-gradient(ellipse 0.95rem 0.75rem at 50% 92%, var(--primary-foreground) 0 97%, transparent 100%),
+        linear-gradient(
+            135deg,
+            color-mix(in oklch, var(--primary) 80%, white),
+            var(--primary) 55%,
+            color-mix(in oklch, var(--primary) 70%, oklch(0.55 0.25 320))
+        );
+    box-shadow:
+        0 1px 0 oklch(1 0 0 / 0.25) inset,
+        0 8px 24px -8px color-mix(in oklch, var(--primary) 70%, transparent);
 }
 
 /* Page title and subtitle. */
@@ -101,9 +128,10 @@ a {
     box-shadow: none;
 }
 
-/* "Powered by" footer. */
-.min-h-\[90vh\] a[href*="authelia.com"] {
-    color: var(--muted-foreground);
+/* Hide the "Powered by" link (and its separator when a privacy policy link follows). */
+.min-h-\[90vh\] a[href*="authelia.com"],
+.min-h-\[90vh\] a[href*="authelia.com"] + [data-slot="separator"] {
+    display: none;
 }
 
 /* On small screens the card fills the viewport without its chrome. */
