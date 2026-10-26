@@ -16,9 +16,20 @@
  * Note: Authelia's Content-Security-Policy only allows resources from 'self',
  * so this file deliberately relies on locally installed system fonts and never
  * loads remote assets.
+ *
+ * Contents:
+ *   1. Theme variables
+ *   2. Base
+ *   3. Buttons
+ *   4. Inputs
+ *   5. Surfaces: cards, dialogs, menus, tooltips, toasts, icon badges
+ *   6. Login and minimal layouts (card, padlock icon, first factor form)
+ *   7. Second factor
+ *   8. Dialogs
+ *   9. Settings
  */
 
-/* ---------- Shadows (per color scheme) ---------- */
+/* ---------- 1. Theme variables ---------- */
 :root,
 [data-theme="light"] {
     --theme-panel-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 12px 32px -12px oklch(0 0 0 / 0.12);
@@ -30,7 +41,14 @@
     --theme-panel-shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 24px 48px -24px oklch(0 0 0 / 0.6);
 }
 
-/* ---------- Base ---------- */
+:root {
+    --theme-button-shadow: 0 1px 2px oklch(0 0 0 / 0.1), 0 1px 0 oklch(1 0 0 / 0.15) inset;
+    --theme-primary-hover: color-mix(in oklch, var(--primary) 88%, black);
+    --theme-destructive-hover: color-mix(in oklch, var(--destructive) 88%, black);
+    --theme-hover-border: color-mix(in oklch, var(--foreground) 18%, var(--border));
+}
+
+/* ---------- 2. Base ---------- */
 body {
     font-family:
         "Inter",
@@ -62,7 +80,240 @@ a {
     text-underline-offset: 3px;
 }
 
-/* ---------- Login / minimal layouts: present the form as a centered card ---------- */
+* {
+    scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
+    scrollbar-width: thin;
+}
+
+/* Pointer cursor on interactive elements. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="checkbox"],
+[role="radio"],
+[role="switch"],
+[role="menuitem"],
+[role="tab"],
+a[href],
+label[for],
+select,
+summary {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+/* ---------- 3. Buttons ----------
+ * The Button component may be re-tagged by wrappers (e.g. tooltips), so it is
+ * matched both by its data-slot and by its distinctive base classes.
+ */
+:is([data-slot="button"], .inline-flex.uppercase) {
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease,
+        transform 150ms ease;
+}
+
+/* Default size: taller and bolder. */
+:is([data-slot="button"], .inline-flex.uppercase).h-10 {
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+:is([data-slot="button"], .inline-flex.uppercase):active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+:is([data-slot="button"], .inline-flex.uppercase).border:not(.bg-primary, .bg-secondary, .bg-destructive) {
+    background-color: transparent;
+}
+
+/*
+ * Solid primary actions: primary buttons, plus the actions this theme
+ * promotes to it ("Register device", "Retry", the main action of a dialog).
+ */
+:is([data-slot="button"], .inline-flex.uppercase).bg-primary,
+#register-link,
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"],
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child) {
+    box-shadow: var(--theme-button-shadow);
+}
+
+:is([data-slot="button"], .inline-flex.uppercase).bg-primary:hover:not(:disabled),
+#register-link:hover,
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"]:hover,
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child):hover:not(:disabled) {
+    background-color: var(--theme-primary-hover);
+}
+
+/*
+ * Neutral outlined secondary actions: passkey sign in, secondary dialog
+ * actions (Previous, Cancel...) and the method selection "Close" button.
+ */
+#passkey-sign-in-button,
+[data-slot="dialog-footer"] > [data-variant="ghost"],
+[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"] {
+    border: 1px solid var(--input);
+    background-color: transparent;
+    color: var(--foreground);
+    box-shadow: none;
+}
+
+#passkey-sign-in-button:hover:not(:disabled),
+[data-slot="dialog-footer"] > [data-variant="ghost"]:hover:not(:disabled),
+[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"]:hover {
+    background-color: var(--muted);
+}
+
+/* ---------- 4. Inputs ---------- */
+[data-slot="floating-input"],
+[data-slot="input"],
+[data-slot="input-group"] {
+    border-radius: var(--radius-md);
+    background-color: var(--card);
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+[data-slot="floating-input"]:hover:not(:focus, :disabled),
+[data-slot="input"]:hover:not(:focus, :disabled) {
+    border-color: color-mix(in oklch, var(--foreground) 30%, var(--input));
+}
+
+[data-slot="floating-input"]:focus,
+[data-slot="input"]:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 18%, transparent);
+}
+
+/* Stand-alone labels placed above a field (reset password, one-time code...). */
+[data-slot="label"]:has(+ [data-slot="input"]) {
+    display: block;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+[data-slot="checkbox"] {
+    border-radius: 0.3rem;
+}
+
+/* ---------- 5. Surfaces ---------- */
+[data-slot="card"] {
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.04);
+}
+
+[data-slot="dialog-content"],
+[data-slot="sheet-content"],
+[data-slot="dropdown-menu-content"] {
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 2px);
+    box-shadow: 0 16px 40px -12px oklch(0 0 0 / 0.25);
+}
+
+[data-slot="sheet-content"] {
+    border-radius: 0;
+}
+
+[data-slot="dialog-overlay"],
+[data-slot="sheet-overlay"] {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+/* Tooltips are hidden everywhere: the button labels already say what they do. */
+[data-slot="tooltip-content"] {
+    display: none;
+}
+
+/* Toasts: neutral card, only the icon (in a tinted badge) carries the color. */
+[data-slot="toast-viewport"] {
+    width: 380px;
+}
+
+[data-slot="toast"] {
+    gap: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 2px);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    font-size: 0.875rem;
+    box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.06),
+        0 12px 32px -12px oklch(0 0 0 / 0.35);
+}
+
+[data-slot="toast"] > span:first-child {
+    width: 1.875rem;
+    height: 1.875rem;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--toast-accent) 14%, transparent);
+    color: var(--toast-accent);
+}
+
+[data-slot="toast-title"] {
+    line-height: 1.4;
+}
+
+/*
+ * Round icon badges: the info icon (second factor, dialogs) and the
+ * success / failure icons. The glyph keeps a normal stroke inside a tinted
+ * circle of its color.
+ */
+:is(#\32 fa-container, [data-slot="dialog-content"]) .information-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.625rem;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+}
+
+:is(#\32 fa-container, [data-slot="dialog-content"]) .information-icon > :is(path, circle) {
+    scale: 1;
+}
+
+#\32 fa-container :is(.failure-icon, .success-icon) {
+    --status: var(--destructive);
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--status) 12%, transparent);
+    color: var(--status);
+    stroke-width: 1.25;
+}
+
+#\32 fa-container .success-icon {
+    --status: var(--success);
+}
+
+/* These glyphs are drawn small to fit in their own circle: drop the circle, enlarge the glyph. */
+#\32 fa-container :is(.failure-icon, .success-icon) > path {
+    scale: 2;
+}
+
+#\32 fa-container :is(.failure-icon, .success-icon) > circle {
+    display: none;
+}
+
+/* ---------- 6. Login and minimal layouts ---------- */
+
+/* The form is presented as a centered card. */
 .min-h-\[90vh\] > div:first-child {
     padding: 2.75rem 2.5rem 2.25rem;
     border: 1px solid var(--border);
@@ -72,7 +323,48 @@ a {
     box-shadow: var(--theme-panel-shadow);
 }
 
-/* Logo above the title. */
+.min-h-\[90vh\] > div.max-w-\[444px\] {
+    max-width: 30rem;
+}
+
+/* On small screens the card fills the viewport without its chrome. */
+@media (max-width: 480px) {
+    .min-h-\[90vh\] > div:first-child {
+        padding-inline: 1.25rem;
+        border-color: transparent;
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+/* Page title and subtitle. */
+.min-h-\[90vh\] h5 {
+    margin-block: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.min-h-\[90vh\] h6 {
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Cards nested inside the login card (consent pages) become flat panels. */
+.min-h-\[90vh\] [data-slot="card"] {
+    border-color: var(--border);
+    background-color: var(--muted);
+    box-shadow: none;
+}
+
+/* Hide the "Powered by" link (and its separator when a privacy policy link follows). */
+.min-h-\[90vh\] a[href*="authelia.com"],
+.min-h-\[90vh\] a[href*="authelia.com"] + [data-slot="separator"] {
+    display: none;
+}
+
+/* A custom logo.png keeps its own image. */
 .min-h-\[90vh\] img.w-16 {
     width: 3rem;
     height: 3rem;
@@ -80,8 +372,8 @@ a {
 
 /*
  * The default account silhouette is replaced by a padlock on a gradient tile,
- * drawn in pure CSS (no image: the CSP blocks data: URIs). A custom logo.png
- * is untouched.
+ * drawn in pure CSS (no image: the CSP blocks data: URIs). Every size is in
+ * rem so the glyph stays aligned with the tile at any font size.
  */
 .min-h-\[90vh\] svg.w-16 {
     display: none;
@@ -91,10 +383,7 @@ a {
     position: relative;
 }
 
-/*
- * Tile with the padlock shackle (a ring whose lower half is hidden by the body).
- * Every size is in rem so the glyph stays aligned with the tile at any font size.
- */
+/* Tile with the padlock shackle (a ring whose lower half is hidden by the body). */
 .min-h-\[90vh\] div:has(> svg.w-16)::before {
     content: "";
     display: block;
@@ -120,7 +409,7 @@ a {
         0 4px 12px -4px color-mix(in oklch, var(--primary) 55%, transparent);
 }
 
-/* Padlock body with its keyhole, laid over the tile. */
+/* Padlock body with its keyhole (circle and slot on the same axis), laid over the tile. */
 .min-h-\[90vh\] div:has(> svg.w-16)::after {
     content: "";
     position: absolute;
@@ -142,51 +431,130 @@ a {
     transform: translateX(-50%);
 }
 
-/* Page title and subtitle. */
-.min-h-\[90vh\] h5 {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-size: 1.75rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+/* First factor form: even vertical rhythm instead of negative margins. */
+#form-login > .grid {
+    gap: 1.25rem;
 }
 
-.min-h-\[90vh\] h6 {
-    color: var(--muted-foreground);
-    font-size: 1rem;
+#form-login .-my-2 {
+    margin-block: 0;
+}
+
+#form-login [data-slot="label"],
+#form-login :is(#reset-password-button, #register-button) {
+    font-size: 0.9375rem;
+}
+
+#form-login :is(#reset-password-button, #register-button) {
+    padding-block: 0.25rem;
     font-weight: 500;
 }
 
-/* Cards nested inside the login card become flat panels. */
-.min-h-\[90vh\] [data-slot="card"] {
-    border-color: var(--border);
-    background-color: var(--muted);
-    box-shadow: none;
+#form-login #sign-in-button {
+    height: 3rem;
+    font-size: 1rem;
 }
 
-/* Second factor: "device not registered" panel. */
+/* Reset password forms: breathing room between rows. */
+[id^="form-reset-password"] .grid {
+    gap: 1.25rem;
+}
+
+/* ---------- 7. Second factor ---------- */
+
+/* A single, slightly wider card with no nested frames. */
+#second-factor-stage > div.max-w-\[444px\] {
+    max-width: 32rem;
+}
+
+#second-factor-stage .rounded-\[10px\].border {
+    width: 100%;
+    margin-block: 1.25rem 0;
+    padding: 1.5rem 0 0;
+    border-width: 1px 0 0;
+    border-color: var(--border);
+    border-radius: 0;
+}
+
+/* Method title. */
 .min-h-\[90vh\] h6:has(+ #\32 fa-container) {
     color: var(--foreground);
     font-size: 1rem;
     font-weight: 600;
 }
 
+/*
+ * "Logout | Methods": equal-width neutral buttons spanning the card (the
+ * literal pipes are hidden with font-size 0).
+ */
+#second-factor-stage div:has(> #logout-button) {
+    display: flex;
+    font-size: 0;
+}
+
+#second-factor-stage div:has(> #logout-button) > * {
+    flex: 1 1 0;
+}
+
+#second-factor-stage div:has(> #logout-button) > * + * {
+    margin-left: 0.625rem;
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
+    height: 2.5rem;
+    padding-inline: 1rem;
+    border: 1px solid var(--border);
+    background-color: var(--muted);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: none;
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
+    border-color: var(--theme-hover-border);
+    background-color: color-mix(in oklch, var(--foreground) 5%, var(--muted));
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):focus-visible {
+    outline: 2px solid color-mix(in oklch, var(--ring) 60%, transparent);
+    outline-offset: 2px;
+}
+
+/*
+ * "Device not registered" and "method failed" messages share one layout:
+ * the icon badge beside the text, the action button centered below.
+ */
 #\32 fa-container.state-not-registered {
     height: auto;
     min-height: 0;
     padding-block: 1rem 0.5rem;
 }
 
-#\32 fa-container.state-not-registered > div {
+:is(#\32 fa-container.state-not-registered, #\32 fa-container:has(.failure-icon)) > div {
     display: grid;
     grid-template-columns: auto 1fr;
     align-content: center;
     align-items: center;
     column-gap: 0.875rem;
-    row-gap: 0.125rem;
     max-width: 24rem;
     margin-inline: auto;
     text-align: left;
+}
+
+:is(#\32 fa-container.state-not-registered, #\32 fa-container:has(.failure-icon)) > div > p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+/* Not registered: the method title is redundant with the message. */
+.min-h-\[90vh\] h6:has(+ #\32 fa-container.state-not-registered) {
+    display: none;
+}
+
+#\32 fa-container.state-not-registered > div {
+    row-gap: 0.125rem;
 }
 
 #\32 fa-container.state-not-registered > div > div:has(.information-icon) {
@@ -195,58 +563,68 @@ a {
     margin: 0;
 }
 
-#\32 fa-container .information-icon {
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0.5rem;
-    border-radius: 9999px;
-    background-color: color-mix(in oklch, var(--primary) 14%, transparent);
-    color: var(--primary);
-}
-
-#\32 fa-container .information-icon > path,
-#\32 fa-container .information-icon > circle {
-    scale: 1;
-}
-
-#\32 fa-container.state-not-registered p {
-    margin: 0;
+#\32 fa-container.state-not-registered > div > p {
     color: var(--muted-foreground);
-    font-size: 0.9375rem;
-    line-height: 1.5;
 }
 
-.min-h-\[90vh\] h6:has(+ #\32 fa-container.state-not-registered) {
-    display: none;
-}
-
-#\32 fa-container.state-not-registered p:first-of-type {
+#\32 fa-container.state-not-registered > div > p:first-of-type {
     margin-bottom: 0.25rem;
     color: var(--foreground);
     font-size: 1.0625rem;
     font-weight: 500;
 }
 
-#register-link {
+/* Failed: the wrapper of the icon and the "Retry" button is flattened onto the grid. */
+#\32 fa-container:has(.failure-icon) > div > div.mb-4 {
+    display: contents;
+}
+
+#\32 fa-container:has(.failure-icon) > div > div.mb-4 > div.w-full:has(.failure-icon) {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+}
+
+#\32 fa-container:has(.failure-icon) > div > p {
+    grid-column: 2;
+    grid-row: 1;
+    color: var(--foreground);
+}
+
+#\32 fa-container:has(.failure-icon) > div > div.mb-4 > div:has(> [data-variant="ghost"]) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    margin-top: 1.25rem;
+}
+
+#\32 fa-container:has(.failure-icon) #rate-limit-countdown {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 0.75rem;
+}
+
+/* "Register device" and "Retry": solid primary actions (shadow and hover in section 3). */
+#register-link,
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 2.5rem;
-    margin-top: 1rem;
     padding-inline: 1.25rem;
     border-radius: var(--radius-md);
     background-color: var(--primary);
     color: var(--primary-foreground);
     font-size: 0.875rem;
     font-weight: 500;
-    box-shadow:
-        0 1px 2px oklch(0 0 0 / 0.1),
-        0 1px 0 oklch(1 0 0 / 0.15) inset;
+}
+
+#register-link {
+    margin-top: 1rem;
     transition: background-color 150ms ease;
 }
 
 #register-link:hover {
-    background-color: color-mix(in oklch, var(--primary) 88%, black);
     text-decoration: none;
 }
 
@@ -254,226 +632,6 @@ a {
     margin-top: 0.75rem;
     font-size: 0.875rem;
     font-weight: 500;
-}
-
-/* Hide the "Powered by" link (and its separator when a privacy policy link follows). */
-.min-h-\[90vh\] a[href*="authelia.com"],
-.min-h-\[90vh\] a[href*="authelia.com"] + [data-slot="separator"] {
-    display: none;
-}
-
-/* On small screens the card fills the viewport without its chrome. */
-@media (max-width: 480px) {
-    .min-h-\[90vh\] > div:first-child {
-        padding-inline: 1.25rem;
-        border-color: transparent;
-        background-color: transparent;
-        box-shadow: none;
-    }
-}
-
-/* ---------- Buttons ----------
- * The Button component may be re-tagged by wrappers (e.g. tooltips), so it is
- * matched both by its data-slot and by its distinctive base classes.
- */
-:is([data-slot="button"], .inline-flex.uppercase) {
-    border-radius: var(--radius-md);
-    font-weight: 500;
-    letter-spacing: 0;
-    text-transform: none;
-    transition:
-        background-color 150ms ease,
-        border-color 150ms ease,
-        color 150ms ease,
-        box-shadow 150ms ease,
-        transform 150ms ease;
-}
-
-:is([data-slot="button"], .inline-flex.uppercase).bg-primary {
-    box-shadow:
-        0 1px 2px oklch(0 0 0 / 0.1),
-        0 1px 0 oklch(1 0 0 / 0.15) inset;
-}
-
-:is([data-slot="button"], .inline-flex.uppercase).bg-primary:hover:not(:disabled) {
-    background-color: color-mix(in oklch, var(--primary) 88%, black);
-}
-
-:is([data-slot="button"], .inline-flex.uppercase):active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-:is([data-slot="button"], .inline-flex.uppercase).border:not(.bg-primary, .bg-secondary, .bg-destructive) {
-    background-color: transparent;
-}
-
-/* ---------- Inputs ---------- */
-[data-slot="floating-input"],
-[data-slot="input"],
-[data-slot="input-group"] {
-    border-radius: var(--radius-md);
-    background-color: var(--card);
-    transition:
-        border-color 150ms ease,
-        box-shadow 150ms ease;
-}
-
-[data-slot="floating-input"]:hover:not(:focus, :disabled),
-[data-slot="input"]:hover:not(:focus, :disabled) {
-    border-color: color-mix(in oklch, var(--foreground) 30%, var(--input));
-}
-
-[data-slot="floating-input"]:focus,
-[data-slot="input"]:focus {
-    border-color: var(--ring);
-    box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 18%, transparent);
-}
-
-/* Stand-alone labels placed above a field (reset password, one-time code). */
-[data-slot="label"]:has(+ [data-slot="input"]) {
-    display: block;
-    margin-bottom: 0.5rem;
-    text-align: left;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-[data-slot="checkbox"] {
-    border-radius: 0.3rem;
-}
-
-/* ---------- Cards, dialogs, menus ---------- */
-[data-slot="card"] {
-    border-radius: calc(var(--radius) + 4px);
-    box-shadow: 0 1px 2px oklch(0 0 0 / 0.04);
-}
-
-[data-slot="dialog-content"],
-[data-slot="sheet-content"],
-[data-slot="dropdown-menu-content"],
-[data-slot="toast"] {
-    border: 1px solid var(--border);
-    border-radius: calc(var(--radius) + 2px);
-    box-shadow: 0 16px 40px -12px oklch(0 0 0 / 0.25);
-}
-
-[data-slot="sheet-content"] {
-    border-radius: 0;
-}
-
-[data-slot="dialog-overlay"],
-[data-slot="sheet-overlay"] {
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-}
-
-/*
- * Dialog footers: secondary actions as neutral outlined buttons, the main
- * (last) action as a solid button, red when it is destructive.
- */
-[data-slot="dialog-footer"] {
-    gap: 0.5rem;
-}
-
-[data-slot="dialog-footer"] > [data-variant="ghost"] {
-    height: 2.5rem;
-    padding-inline: 1.125rem;
-    border: 1px solid var(--input);
-    background-color: transparent;
-    color: var(--foreground);
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-[data-slot="dialog-footer"] > [data-variant="ghost"]:hover:not(:disabled) {
-    background-color: var(--muted);
-}
-
-[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child) {
-    border-color: transparent;
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-    box-shadow:
-        0 1px 2px oklch(0 0 0 / 0.1),
-        0 1px 0 oklch(1 0 0 / 0.15) inset;
-}
-
-[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child) {
-    background-color: var(--destructive);
-    color: var(--destructive-foreground);
-}
-
-[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child):hover:not(:disabled) {
-    background-color: color-mix(in oklch, var(--primary) 88%, black);
-}
-
-[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child):hover:not(:disabled) {
-    background-color: color-mix(in oklch, var(--destructive) 88%, black);
-}
-
-/* Steppers in dialogs: clear separation between the steps and the step content. */
-[data-slot="dialog-content"] [data-slot="stepper"] {
-    margin-bottom: 0.75rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
-}
-
-/* Dialog steps with an info icon: the icon beside its text, the form below. */
-[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    column-gap: 0.875rem;
-    text-align: left;
-}
-
-[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > * {
-    grid-column: 1 / -1;
-}
-
-[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > .py-8 {
-    grid-column: 1;
-    padding-block: 1rem;
-}
-
-[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > p.pb-8 {
-    grid-column: 2;
-    padding-block: 1rem;
-}
-
-[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) .information-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0.625rem;
-}
-
-/* Dialog bodies: wider narrow dialogs, compact spacing, small icon badges. */
-[data-slot="dialog-content"].sm\:max-w-xs {
-    max-width: min(26rem, calc(100% - 2rem));
-}
-
-[data-slot="dialog-content"] .py-8 {
-    padding-block: 0.75rem 1rem;
-}
-
-[data-slot="dialog-content"] p.pb-8 {
-    padding-bottom: 1.25rem;
-    font-size: 0.9375rem;
-}
-
-[data-slot="dialog-content"] .information-icon {
-    width: 3rem;
-    height: 3rem;
-    margin-inline: auto;
-    padding: 0.75rem;
-    border-radius: 9999px;
-    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
-    color: var(--primary);
-}
-
-[data-slot="dialog-content"] .information-icon > path,
-[data-slot="dialog-content"] .information-icon > circle {
-    scale: 1;
 }
 
 /* Method selection dialog: neutral option rows with an icon badge. */
@@ -492,7 +650,7 @@ a {
 }
 
 #methods-dialog .method-option > :is([data-slot="button"], .inline-flex.uppercase):hover {
-    border-color: color-mix(in oklch, var(--foreground) 18%, var(--border));
+    border-color: var(--theme-hover-border);
     background-color: var(--muted);
 }
 
@@ -517,165 +675,85 @@ a {
     font-weight: 500;
 }
 
-[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"] {
-    border: 1px solid var(--input);
-    background-color: transparent;
-    color: var(--foreground);
-    box-shadow: none;
+/* ---------- 8. Dialogs ---------- */
+
+/* Narrow dialogs are widened a little. */
+[data-slot="dialog-content"].sm\:max-w-xs {
+    max-width: min(26rem, calc(100% - 2rem));
 }
 
-[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"]:hover {
-    background-color: var(--muted);
+/* Steppers: a thin rule and some space between the steps and the step content. */
+[data-slot="dialog-content"] [data-slot="stepper"] {
+    margin-bottom: 0.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
 }
 
-/* Passkey sign in: a secondary (outlined) action under the main "Sign in". */
-#passkey-sign-in-button {
-    border: 1px solid var(--input);
-    background-color: transparent;
-    color: var(--foreground);
-    box-shadow: none;
+[data-slot="dialog-content"] .py-8 {
+    padding-block: 0.75rem 1rem;
 }
 
-#passkey-sign-in-button:hover:not(:disabled) {
-    background-color: var(--muted);
+[data-slot="dialog-content"] p.pb-8 {
+    padding-bottom: 1.25rem;
+    font-size: 0.9375rem;
 }
 
-/*
- * Second factor status icons: the glyph alone (no outer circle, normal
- * stroke) inside a tinted round badge, red for failure and green for success.
- */
-#\32 fa-container :is(.failure-icon, .success-icon) {
-    --status: var(--destructive);
-    width: 3.5rem;
-    height: 3.5rem;
-    padding: 0.75rem;
-    border-radius: 9999px;
-    background-color: color-mix(in oklch, var(--status) 12%, transparent);
-    color: var(--status);
-    stroke-width: 1.25;
-}
-
-#\32 fa-container .success-icon {
-    --status: var(--success);
-}
-
-/* The glyph is drawn small (to fit in its circle): enlarge it around the center. */
-#\32 fa-container :is(.failure-icon, .success-icon) > path {
-    scale: 2;
-}
-
-#\32 fa-container :is(.failure-icon, .success-icon) > circle {
-    display: none;
-}
-
-/*
- * Failed method: same layout as the "not registered" message. The status
- * badge sits beside the explanation and "Retry" is a solid button below.
- * The wrapper around the icon and the button is flattened with
- * display: contents so they can be placed on the grid.
- */
-#\32 fa-container > div:has(.failure-icon) {
+/* Steps with an info icon: the icon beside its text, the form full width below. */
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
     column-gap: 0.875rem;
-    max-width: 24rem;
-    margin-inline: auto;
     text-align: left;
 }
 
-#\32 fa-container > div:has(.failure-icon) > div.mb-4 {
-    display: contents;
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > * {
+    grid-column: 1 / -1;
 }
 
-#\32 fa-container > div:has(.failure-icon) > div.mb-4 > div.w-full:has(.failure-icon) {
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > .py-8 {
     grid-column: 1;
-    grid-row: 1;
-    width: auto;
+    padding-block: 1rem;
 }
 
-#\32 fa-container > div:has(.failure-icon) > p {
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > p.pb-8 {
     grid-column: 2;
-    grid-row: 1;
-    margin: 0;
-    color: var(--foreground);
-    font-size: 0.9375rem;
-    line-height: 1.5;
+    padding-block: 1rem;
 }
 
-#\32 fa-container > div:has(.failure-icon) > div.mb-4 > div:has(> [data-variant="ghost"]) {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
-    margin-top: 1.25rem;
+/*
+ * Footer: secondary actions are neutral outlined buttons (section 3), the
+ * main (last) action is a solid button, red when it is destructive.
+ */
+[data-slot="dialog-footer"] {
+    gap: 0.5rem;
 }
 
-#\32 fa-container > div:has(.failure-icon) #rate-limit-countdown {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    margin-top: 0.75rem;
-}
-
-#\32 fa-container > div:has(.failure-icon) .failure-icon {
-    width: 2.75rem;
-    height: 2.75rem;
-    padding: 0.5rem;
-}
-
-/* "Retry": the main action of a failed method, styled like "Register device". */
-#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"] {
+[data-slot="dialog-footer"] > [data-variant="ghost"] {
     height: 2.5rem;
-    padding-inline: 1.25rem;
-    border-radius: var(--radius-md);
-    background-color: var(--primary);
-    color: var(--primary-foreground);
+    padding-inline: 1.125rem;
     font-size: 0.875rem;
     font-weight: 500;
-    box-shadow:
-        0 1px 2px oklch(0 0 0 / 0.1),
-        0 1px 0 oklch(1 0 0 / 0.15) inset;
 }
 
-#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"]:hover {
-    background-color: color-mix(in oklch, var(--primary) 88%, black);
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child) {
+    border-color: transparent;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
 }
 
-/* ---------- Tooltips: hidden everywhere (labels already say what buttons do) ---------- */
-[data-slot="tooltip-content"] {
-    display: none;
+[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child) {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
 }
 
-/* ---------- Toasts: neutral card, only the icon carries the color ---------- */
-[data-slot="toast-viewport"] {
-    width: 380px;
+[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child):hover:not(:disabled) {
+    background-color: var(--theme-destructive-hover);
 }
 
-[data-slot="toast"] {
-    gap: 0.75rem;
-    padding: 0.75rem 1rem 0.75rem 0.75rem;
-    border-color: var(--border);
-    background-color: var(--popover);
-    color: var(--popover-foreground);
-    font-size: 0.875rem;
-    box-shadow:
-        0 1px 2px oklch(0 0 0 / 0.06),
-        0 12px 32px -12px oklch(0 0 0 / 0.35);
-}
+/* ---------- 9. Settings ---------- */
 
-[data-slot="toast"] > span:first-child {
-    width: 1.875rem;
-    height: 1.875rem;
-    justify-content: center;
-    border-radius: 9999px;
-    background-color: color-mix(in oklch, var(--toast-accent) 14%, transparent);
-    color: var(--toast-accent);
-}
-
-[data-slot="toast-title"] {
-    line-height: 1.4;
-}
-
-/* ---------- Settings top bar: translucent instead of a solid color ---------- */
+/* Top bar: translucent instead of a solid color. */
 nav.fixed.bg-primary {
     border-bottom: 1px solid var(--border);
     background-color: color-mix(in oklch, var(--background) 80%, transparent);
@@ -693,96 +771,24 @@ nav.fixed.bg-primary h6 {
     letter-spacing: -0.01em;
 }
 
-/* ---------- Pointer cursor on interactive elements ---------- */
-button:not(:disabled),
-[role="button"]:not([aria-disabled="true"]),
-[role="checkbox"],
-[role="radio"],
-[role="switch"],
-[role="menuitem"],
-[role="tab"],
-a[href],
-label[for],
-select,
-summary {
-    cursor: pointer;
-}
-
-button:disabled {
-    cursor: not-allowed;
-}
-
-/* ---------- Sizing and spacing ---------- */
-
-/* A slightly wider login card. */
-.min-h-\[90vh\] > div.max-w-\[444px\] {
-    max-width: 30rem;
-}
-
-/* Taller, bolder buttons (default size). */
-:is([data-slot="button"], .inline-flex.uppercase).h-10 {
-    height: 2.75rem;
-    padding-inline: 1.25rem;
-    font-size: 0.9375rem;
-    font-weight: 600;
-}
-
-/* Login form: even vertical rhythm instead of negative margins. */
-#form-login > .grid {
-    gap: 1.25rem;
-}
-
-#form-login .-my-2 {
-    margin-block: 0;
-}
-
-#form-login [data-slot="label"],
-#form-login #reset-password-button,
-#form-login #register-button {
-    font-size: 0.9375rem;
-}
-
-#form-login #reset-password-button,
-#form-login #register-button {
-    padding-block: 0.25rem;
-    font-weight: 500;
-}
-
-#form-login #sign-in-button {
-    height: 3rem;
-    font-size: 1rem;
-}
-
-/* Floating inputs: a bit more room for the text. */
-[data-slot="floating-input"] {
-    height: 3.5rem;
-    font-size: 1rem;
-}
-
-/* Reset password and other minimal forms: breathing room between rows. */
-[id^="form-reset-password"] .grid {
-    gap: 1.25rem;
-}
-
-/* Second factor buttons ("Logout | Methods"). */
-#second-factor-stage [data-slot="button"],
-#second-factor-stage .inline-flex.uppercase {
-    font-size: 0.9375rem;
-}
-
-/* Settings: centered content column and roomier cards. */
+/* Centered content column. */
 nav.fixed.bg-primary ~ main {
     width: 100%;
     max-width: 64rem;
     margin-inline: auto;
 }
 
-nav.fixed.bg-primary ~ main [data-slot="card-content"].p-4 {
-    padding: 1.5rem;
+/* Every panel shares the same inner padding and type scale. */
+nav.fixed.bg-primary ~ main [data-slot="card"] {
+    padding-block: 0;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"] {
+    padding: 1.5rem 1.75rem;
 }
 
 nav.fixed.bg-primary ~ main h5 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     letter-spacing: -0.01em;
 }
@@ -791,7 +797,23 @@ nav.fixed.bg-primary ~ main p {
     font-size: 0.9375rem;
 }
 
-/* Settings > Security: one even padding around the account details. */
+/* Overview: left-aligned title and muted text. */
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4),
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > :is(h4, p) {
+    text-align: left;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > p {
+    margin-block: 0.25rem;
+    color: var(--muted-foreground);
+}
+
+/* Security: one even padding around the account details. */
 nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) {
     width: min(28rem, 100%);
     padding: 1.75rem;
@@ -816,19 +838,15 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
 }
 
 /*
- * Settings > Two-Factor Authentication: each panel is a compact row with the
- * title and description on the left and the "Add" button on the right.
+ * Two-Factor Authentication panels: a compact row with the title and the
+ * description on the left, the "Add" button on the right and the registered
+ * devices full width below.
  */
-:is(#one-time-password-panel, #webauthn-credentials-panel) {
-    padding-block: 0;
-}
-
 :is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] {
     grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: 1.5rem;
     row-gap: 0.375rem;
-    padding: 1.5rem 1.75rem;
 }
 
 :is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > * {
@@ -863,83 +881,21 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
     margin-top: 0.75rem;
 }
 
-:is(#one-time-password-panel, #webauthn-credentials-panel) h5 {
-    font-size: 1.125rem;
-}
-
 :is(#one-time-password-panel, #webauthn-credentials-panel) p.text-muted-foreground {
-    font-size: 0.9375rem;
     line-height: 1.5;
 }
 
-/* Settings > Two-Factor Authentication > Options: same padding as the other panels. */
-nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) {
-    padding-block: 0;
-}
-
-nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) > [data-slot="card-content"] {
-    padding: 1.5rem 1.75rem;
-}
-
+/* Options panel. */
 nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) .grid.p-4 {
     padding: 0;
 }
 
-nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) h5 {
-    font-size: 1.125rem;
-}
-
-/* Settings on small screens: keep a gutter so the cards don't touch the edges. */
-@media (max-width: 639px) {
-    nav.fixed.bg-primary ~ main {
-        padding-inline: 0.75rem;
-        padding-bottom: 1rem;
-    }
-
-    nav.fixed.bg-primary ~ main .grid.gap-4 {
-        padding-top: 0.75rem;
-    }
-
-    :is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"],
-    nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) > [data-slot="card-content"] {
-        padding: 1.25rem;
-    }
-}
-
-/* Settings > Overview: left-aligned, quieter text. */
-nav.fixed.bg-primary ~ main [data-slot="card"]:has(> [data-slot="card-content"] > h4) {
-    padding-block: 0;
-}
-
-nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) {
-    padding: 1.5rem 1.75rem;
-    text-align: left;
-}
-
-nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > h4 {
-    margin-bottom: 0.5rem;
-    font-size: 1.25rem;
-    text-align: left;
-}
-
-nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > p {
-    margin-block: 0.25rem;
-    color: var(--muted-foreground);
-    font-size: 0.9375rem;
-    text-align: left;
-}
-
 /*
- * Settings > Two-Factor Authentication: "WebAuthn disabled" panel. While the
- * configuration loads, the app briefly renders this panel alone. Once loaded,
- * the One-Time Password or the Options panel is always next to it, so it is
- * hidden while it is the only panel (no flash, whatever the load time).
- * Styled like the other panels.
+ * "WebAuthn disabled" panel. While the configuration loads, the app briefly
+ * renders it alone; once loaded, the One-Time Password or the Options panel is
+ * always next to it. It is hidden while it is the only panel, so it never
+ * flashes, whatever the load time.
  */
-nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) {
-    padding-block: 0;
-}
-
 nav.fixed.bg-primary
     ~ main
     .grid:not(:has(#one-time-password-panel, [id^="method-"]))
@@ -949,80 +905,30 @@ nav.fixed.bg-primary
 
 nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) > [data-slot="card-content"] {
     row-gap: 0.5rem;
-    padding: 1.5rem 1.75rem;
 }
 
 nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) .text-center {
     text-align: left;
 }
 
-nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) h5 {
-    font-size: 1.125rem;
-}
-
-nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) h6,
-nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) p {
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) :is(h6, p) {
     color: var(--muted-foreground);
     font-size: 0.9375rem;
     font-weight: 400;
 }
 
-/* Second factor: a single card, no nested frames. */
-#second-factor-stage > div.max-w-\[444px\] {
-    max-width: 32rem;
-}
+/* Small screens: keep a gutter so the cards don't touch the edges. */
+@media (max-width: 639px) {
+    nav.fixed.bg-primary ~ main {
+        padding-inline: 0.75rem;
+        padding-bottom: 1rem;
+    }
 
-#second-factor-stage .rounded-\[10px\].border {
-    width: 100%;
-    margin-block: 1.25rem 0;
-    padding: 1.5rem 0 0;
-    border-width: 1px 0 0;
-    border-color: var(--border);
-    border-radius: 0;
-}
+    nav.fixed.bg-primary ~ main .grid.gap-4:not([data-slot="card-content"]) {
+        padding-top: 0.75rem;
+    }
 
-/*
- * "Logout | Methods": equal-width neutral buttons spanning the card (the
- * literal pipes are hidden with font-size 0).
- */
-#second-factor-stage div:has(> #logout-button) {
-    display: flex;
-    font-size: 0;
-}
-
-#second-factor-stage div:has(> #logout-button) > * {
-    flex: 1 1 0;
-}
-
-#second-factor-stage div:has(> #logout-button) > * + * {
-    margin-left: 0.625rem;
-}
-
-#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
-    height: 2.5rem;
-    padding-inline: 1rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background-color: var(--muted);
-    color: var(--foreground);
-    font-size: 0.875rem;
-    font-weight: 500;
-    letter-spacing: 0;
-    box-shadow: none;
-}
-
-#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
-    border-color: color-mix(in oklch, var(--foreground) 18%, var(--border));
-    background-color: color-mix(in oklch, var(--foreground) 5%, var(--muted));
-}
-
-#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):focus-visible {
-    outline: 2px solid color-mix(in oklch, var(--ring) 60%, transparent);
-    outline-offset: 2px;
-}
-
-/* ---------- Scrollbars ---------- */
-* {
-    scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
-    scrollbar-width: thin;
+    nav.fixed.bg-primary ~ main [data-slot="card-content"] {
+        padding: 1.25rem;
+    }
 }
