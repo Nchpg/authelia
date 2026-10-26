@@ -327,10 +327,27 @@ button:disabled {
     max-width: 30rem;
 }
 
+/*
+ * The page fills the viewport below the top bar instead of 90vh under it, so
+ * it only scrolls when the content really doesn't fit (dvh: the visible area
+ * on mobile, browser toolbars excluded).
+ */
+div:has(> .min-h-\[90vh\]) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.min-h-\[90vh\] {
+    flex: 1 0 auto;
+    min-height: 0;
+}
+
 /* On small screens the card fills the viewport without its chrome. */
 @media (max-width: 480px) {
     .min-h-\[90vh\] > div:first-child {
-        padding-inline: 1.25rem;
+        padding: 1rem 1.25rem;
         border-color: transparent;
         background-color: transparent;
         box-shadow: none;
@@ -494,6 +511,7 @@ button:disabled {
 
 #second-factor-stage div:has(> #logout-button) > * {
     flex: 1 1 0;
+    min-width: 0;
 }
 
 #second-factor-stage div:has(> #logout-button) > * + * {
@@ -508,7 +526,19 @@ button:disabled {
     color: var(--foreground);
     font-size: 0.875rem;
     font-weight: 500;
+    white-space: nowrap;
     box-shadow: none;
+}
+
+/* With "Switch User" there are three buttons: tighter so they fit a phone width. */
+@media (max-width: 480px) {
+    #second-factor-stage div:has(> #logout-button) > * + * {
+        margin-left: 0.5rem;
+    }
+
+    #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
+        padding-inline: 0.5rem;
+    }
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
@@ -650,6 +680,25 @@ button:disabled {
 
 #otp-input input[aria-invalid="true"] {
     border-color: var(--destructive);
+}
+
+/* One-time code timer (the method dialog keeps its own colors): a tinted badge with the elapsed time in the primary color. */
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) > circle[r="12"] {
+    stroke: color-mix(in oklch, var(--primary) 30%, transparent);
+    stroke-width: 1.5;
+}
+
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) > circle[r="9"] {
+    fill: color-mix(in oklch, var(--primary) 14%, transparent);
+}
+
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) > circle[r="5"] {
+    stroke: var(--primary);
+}
+
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) {
+    width: 3.5rem;
+    height: 3.5rem;
 }
 
 /* "Register device" and "Retry": solid primary actions (shadow and hover in section 3). */
