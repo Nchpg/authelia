@@ -645,6 +645,36 @@ a {
     display: none;
 }
 
+/* ---------- Toasts: neutral card, only the icon carries the color ---------- */
+[data-slot="toast-viewport"] {
+    width: 380px;
+}
+
+[data-slot="toast"] {
+    gap: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 0.75rem;
+    border-color: var(--border);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    font-size: 0.875rem;
+    box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.06),
+        0 12px 32px -12px oklch(0 0 0 / 0.35);
+}
+
+[data-slot="toast"] > span:first-child {
+    width: 1.875rem;
+    height: 1.875rem;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--toast-accent) 14%, transparent);
+    color: var(--toast-accent);
+}
+
+[data-slot="toast-title"] {
+    line-height: 1.4;
+}
+
 /* ---------- Settings top bar: translucent instead of a solid color ---------- */
 nav.fixed.bg-primary {
     border-bottom: 1px solid var(--border);
