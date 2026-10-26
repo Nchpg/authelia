@@ -1,0 +1,227 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Authelia
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Visual overrides for a minimal, modern look.
+ *
+ * This file only contains presentation rules: it changes no markup, no
+ * behavior and no logic. It is intentionally NOT wrapped in a cascade layer so
+ * that its rules take precedence over the Tailwind CSS utility classes used by
+ * the components. Colors come from the tokens in tailwind-themes.css, so every
+ * theme (light, dark, grey, oled) picks these rules up automatically.
+ *
+ * Note: Authelia's Content-Security-Policy only allows resources from 'self',
+ * so this file deliberately relies on locally installed system fonts and never
+ * loads remote assets.
+ */
+
+/* ---------- Shadows (per color scheme) ---------- */
+:root,
+[data-theme="light"] {
+    --theme-panel-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 12px 32px -12px oklch(0 0 0 / 0.12);
+}
+
+[data-theme="dark"],
+[data-theme="grey"],
+[data-theme="oled"] {
+    --theme-panel-shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 24px 48px -24px oklch(0 0 0 / 0.6);
+}
+
+/* ---------- Base ---------- */
+body {
+    font-family:
+        "Inter",
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "Arial",
+        sans-serif;
+    font-feature-settings: "cv11", "ss01";
+    letter-spacing: -0.006em;
+    background-color: var(--background);
+    background-image: radial-gradient(
+        ellipse 80% 50% at 50% -10%,
+        color-mix(in oklch, var(--primary) 12%, transparent),
+        transparent 70%
+    );
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+::selection {
+    background-color: color-mix(in oklch, var(--primary) 25%, transparent);
+}
+
+a {
+    text-underline-offset: 3px;
+}
+
+/* ---------- Login / minimal layouts: present the form as a centered card ---------- */
+.min-h-\[90vh\] > div:first-child {
+    padding: 2.25rem 2rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 6px);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--theme-panel-shadow);
+}
+
+/* Logo above the title. */
+.min-h-\[90vh\] svg.w-16,
+.min-h-\[90vh\] img.w-16 {
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.9;
+}
+
+/* Page title and subtitle. */
+.min-h-\[90vh\] h5 {
+    margin-top: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.min-h-\[90vh\] h6 {
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Cards nested inside the login card become flat panels. */
+.min-h-\[90vh\] [data-slot="card"] {
+    border-color: var(--border);
+    background-color: var(--muted);
+    box-shadow: none;
+}
+
+/* "Powered by" footer. */
+.min-h-\[90vh\] a[href*="authelia.com"] {
+    color: var(--muted-foreground);
+}
+
+/* On small screens the card fills the viewport without its chrome. */
+@media (max-width: 480px) {
+    .min-h-\[90vh\] > div:first-child {
+        padding-inline: 1.25rem;
+        border-color: transparent;
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+/* ---------- Buttons ----------
+ * The Button component may be re-tagged by wrappers (e.g. tooltips), so it is
+ * matched both by its data-slot and by its distinctive base classes.
+ */
+:is([data-slot="button"], .inline-flex.uppercase) {
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease,
+        transform 150ms ease;
+}
+
+:is([data-slot="button"], .inline-flex.uppercase).bg-primary {
+    box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.1),
+        0 1px 0 oklch(1 0 0 / 0.15) inset;
+}
+
+:is([data-slot="button"], .inline-flex.uppercase).bg-primary:hover:not(:disabled) {
+    background-color: color-mix(in oklch, var(--primary) 88%, black);
+}
+
+:is([data-slot="button"], .inline-flex.uppercase):active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+:is([data-slot="button"], .inline-flex.uppercase).border:not(.bg-primary, .bg-secondary, .bg-destructive) {
+    background-color: transparent;
+}
+
+/* ---------- Inputs ---------- */
+[data-slot="floating-input"],
+[data-slot="input"],
+[data-slot="input-group"] {
+    border-radius: var(--radius-md);
+    background-color: var(--card);
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+[data-slot="floating-input"]:hover:not(:focus, :disabled),
+[data-slot="input"]:hover:not(:focus, :disabled) {
+    border-color: color-mix(in oklch, var(--foreground) 30%, var(--input));
+}
+
+[data-slot="floating-input"]:focus,
+[data-slot="input"]:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 18%, transparent);
+}
+
+[data-slot="checkbox"] {
+    border-radius: 0.3rem;
+}
+
+/* ---------- Cards, dialogs, menus ---------- */
+[data-slot="card"] {
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.04);
+}
+
+[data-slot="dialog-content"],
+[data-slot="sheet-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="toast"] {
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 2px);
+    box-shadow: 0 16px 40px -12px oklch(0 0 0 / 0.25);
+}
+
+[data-slot="sheet-content"] {
+    border-radius: 0;
+}
+
+[data-slot="dialog-overlay"],
+[data-slot="sheet-overlay"] {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+/* ---------- Settings top bar: translucent instead of a solid color ---------- */
+nav.fixed.bg-primary {
+    border-bottom: 1px solid var(--border);
+    background-color: color-mix(in oklch, var(--background) 80%, transparent);
+    color: var(--foreground);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+}
+
+nav.fixed.bg-primary .text-primary-foreground {
+    color: var(--foreground);
+}
+
+nav.fixed.bg-primary h6 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* ---------- Scrollbars ---------- */
+* {
+    scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
+    scrollbar-width: thin;
+}
