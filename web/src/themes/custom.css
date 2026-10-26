@@ -367,6 +367,50 @@ a {
     backdrop-filter: blur(4px);
 }
 
+/*
+ * Dialog footers: secondary actions as neutral outlined buttons, the main
+ * (last) action as a solid button, red when it is destructive.
+ */
+[data-slot="dialog-footer"] {
+    gap: 0.5rem;
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"] {
+    height: 2.5rem;
+    padding-inline: 1.125rem;
+    border: 1px solid var(--input);
+    background-color: transparent;
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"]:hover:not(:disabled) {
+    background-color: var(--muted);
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child) {
+    border-color: transparent;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.1),
+        0 1px 0 oklch(1 0 0 / 0.15) inset;
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child) {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child):hover:not(:disabled) {
+    background-color: color-mix(in oklch, var(--primary) 88%, black);
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child):hover:not(:disabled) {
+    background-color: color-mix(in oklch, var(--destructive) 88%, black);
+}
+
 /* ---------- Settings top bar: translucent instead of a solid color ---------- */
 nav.fixed.bg-primary {
     border-bottom: 1px solid var(--border);
