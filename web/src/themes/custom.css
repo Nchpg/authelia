@@ -94,8 +94,8 @@ a {
     margin: 0.25rem auto 0.75rem;
     border-radius: 1rem;
     background:
-        radial-gradient(circle at 50% 39%, var(--primary-foreground) 0 0.45rem, transparent calc(0.45rem + 1px)),
-        radial-gradient(ellipse 0.95rem 0.75rem at 50% 92%, var(--primary-foreground) 0 97%, transparent 100%),
+        radial-gradient(circle at 50% 37%, var(--primary-foreground) 0 0.45rem, transparent calc(0.45rem + 1px)),
+        radial-gradient(ellipse 0.95rem 0.85rem at 50% 85%, var(--primary-foreground) 0 97%, transparent 100%),
         linear-gradient(
             135deg,
             color-mix(in oklch, var(--primary) 80%, white),
@@ -126,6 +126,80 @@ a {
     border-color: var(--border);
     background-color: var(--muted);
     box-shadow: none;
+}
+
+/* Second factor: "device not registered" panel. */
+.min-h-\[90vh\] h6:has(+ #\32 fa-container) {
+    color: var(--foreground);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+#\32 fa-container.state-not-registered {
+    height: auto;
+    min-height: 0;
+    padding-block: 1rem 0.5rem;
+}
+
+#\32 fa-container.state-not-registered > div {
+    gap: 0.25rem;
+}
+
+#\32 fa-container .information-icon {
+    width: 3rem;
+    height: 3rem;
+    padding: 0.75rem;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+    color: var(--primary);
+}
+
+#\32 fa-container .information-icon > path,
+#\32 fa-container .information-icon > circle {
+    scale: 1;
+}
+
+#\32 fa-container.state-not-registered p {
+    max-width: 30ch;
+    margin-inline: auto;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+#\32 fa-container.state-not-registered p:first-of-type {
+    margin-bottom: 0.25rem;
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+#register-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    margin-top: 1rem;
+    padding-inline: 1.25rem;
+    border-radius: var(--radius-md);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.1),
+        0 1px 0 oklch(1 0 0 / 0.15) inset;
+    transition: background-color 150ms ease;
+}
+
+#register-link:hover {
+    background-color: color-mix(in oklch, var(--primary) 88%, black);
+    text-decoration: none;
+}
+
+#selection-link {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 /* Hide the "Powered by" link (and its separator when a privacy policy link follows). */
@@ -199,6 +273,15 @@ a {
 [data-slot="input"]:focus {
     border-color: var(--ring);
     box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 18%, transparent);
+}
+
+/* Stand-alone labels placed above a field (reset password, one-time code). */
+[data-slot="label"]:has(+ [data-slot="input"]) {
+    display: block;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 [data-slot="checkbox"] {
