@@ -411,6 +411,105 @@ a {
     background-color: color-mix(in oklch, var(--destructive) 88%, black);
 }
 
+/* Dialog bodies: wider narrow dialogs, compact spacing, small icon badges. */
+[data-slot="dialog-content"].sm\:max-w-xs {
+    max-width: min(26rem, calc(100% - 2rem));
+}
+
+[data-slot="dialog-content"] .py-8 {
+    padding-block: 0.75rem 1rem;
+}
+
+[data-slot="dialog-content"] p.pb-8 {
+    padding-bottom: 1.25rem;
+    font-size: 0.9375rem;
+}
+
+[data-slot="dialog-content"] .information-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-inline: auto;
+    padding: 0.75rem;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+    color: var(--primary);
+}
+
+[data-slot="dialog-content"] .information-icon > path,
+[data-slot="dialog-content"] .information-icon > circle {
+    scale: 1;
+}
+
+/* Method selection dialog: neutral option rows with an icon badge. */
+#methods-dialog .method-option > :is([data-slot="button"], .inline-flex.uppercase) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    height: auto;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--foreground);
+    text-align: left;
+    box-shadow: none;
+}
+
+#methods-dialog .method-option > :is([data-slot="button"], .inline-flex.uppercase):hover {
+    border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
+    background-color: var(--muted);
+}
+
+#methods-dialog .method-option .fill-white {
+    display: grid;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: 0;
+    place-items: center;
+    border-radius: var(--radius-md);
+    background-color: var(--primary);
+}
+
+#methods-dialog .method-option .fill-white svg {
+    width: 1.625rem !important;
+    height: 1.625rem !important;
+}
+
+#methods-dialog .method-option p {
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"] {
+    border: 1px solid var(--input);
+    background-color: transparent;
+    color: var(--foreground);
+    box-shadow: none;
+}
+
+[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"]:hover {
+    background-color: var(--muted);
+}
+
+/* Passkey sign in: a secondary (outlined) action under the main "Sign in". */
+#passkey-sign-in-button {
+    border: 1px solid var(--input);
+    background-color: transparent;
+    color: var(--foreground);
+    box-shadow: none;
+}
+
+#passkey-sign-in-button:hover:not(:disabled) {
+    background-color: var(--muted);
+}
+
+/* Second factor status icons (success / failure) at a calmer size. */
+#\32 fa-container :is(.failure-icon, .success-icon) {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
 /* ---------- Settings top bar: translucent instead of a solid color ---------- */
 nav.fixed.bg-primary {
     border-bottom: 1px solid var(--border);
