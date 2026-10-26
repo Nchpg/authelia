@@ -640,6 +640,11 @@ a {
     background-color: color-mix(in oklch, var(--primary) 88%, black);
 }
 
+/* ---------- Tooltips: hidden everywhere (labels already say what buttons do) ---------- */
+[data-slot="tooltip-content"] {
+    display: none;
+}
+
 /* ---------- Settings top bar: translucent instead of a solid color ---------- */
 nav.fixed.bg-primary {
     border-bottom: 1px solid var(--border);
@@ -871,6 +876,70 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) h5 {
     }
 }
 
+/* Settings > Overview: left-aligned, quieter text. */
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(> [data-slot="card-content"] > h4) {
+    padding-block: 0;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) {
+    padding: 1.5rem 1.75rem;
+    text-align: left;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    text-align: left;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > p {
+    margin-block: 0.25rem;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    text-align: left;
+}
+
+/*
+ * Settings > Two-Factor Authentication: "WebAuthn disabled" panel. The app
+ * briefly renders it while the configuration loads, so it only fades in after
+ * a short delay: never seen during a normal load, still shown when WebAuthn
+ * really is disabled. Styled like the other panels.
+ */
+@keyframes theme-delayed-appear {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) {
+    padding-block: 0;
+    animation: theme-delayed-appear 200ms ease-out 600ms both;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) > [data-slot="card-content"] {
+    row-gap: 0.5rem;
+    padding: 1.5rem 1.75rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) .text-center {
+    text-align: left;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) h5 {
+    font-size: 1.125rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) h6,
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) p {
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 400;
+}
+
 /* Second factor: a single card, no nested frames. */
 #second-factor-stage > div.max-w-\[444px\] {
     max-width: 32rem;
@@ -918,11 +987,6 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) h5 {
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
     border-color: color-mix(in oklch, var(--foreground) 18%, var(--border));
     background-color: color-mix(in oklch, var(--foreground) 5%, var(--muted));
-}
-
-/* The hover tooltips on these buttons only repeat their label: hide them on this page. */
-body:has(#second-factor-stage) [data-slot="tooltip-content"] {
-    display: none;
 }
 
 #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):focus-visible {
