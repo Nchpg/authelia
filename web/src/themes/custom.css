@@ -411,6 +411,13 @@ a {
     background-color: color-mix(in oklch, var(--destructive) 88%, black);
 }
 
+/* Steppers in dialogs: clear separation between the steps and the step content. */
+[data-slot="dialog-content"] [data-slot="stepper"] {
+    margin-bottom: 0.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
 /* Dialog steps with an info icon: the icon beside its text, the form below. */
 [data-slot="dialog-content"] div:has(> .py-8 > .information-icon) {
     display: grid;
@@ -561,35 +568,76 @@ a {
     display: none;
 }
 
-/* Failed method: the status badge and the "Retry" button side by side. */
-#\32 fa-container div.mb-4:has(.failure-icon) {
-    display: flex;
-    flex-wrap: wrap;
+/*
+ * Failed method: same layout as the "not registered" message. The status
+ * badge sits beside the explanation and "Retry" is a solid button below.
+ * The wrapper around the icon and the button is flattened with
+ * display: contents so they can be placed on the grid.
+ */
+#\32 fa-container > div:has(.failure-icon) {
+    display: grid;
+    grid-template-columns: auto 1fr;
     align-items: center;
-    justify-content: center;
-    gap: 0.875rem;
+    column-gap: 0.875rem;
+    max-width: 24rem;
+    margin-inline: auto;
+    text-align: left;
 }
 
-#\32 fa-container div.mb-4:has(.failure-icon) > div.w-full {
+#\32 fa-container > div:has(.failure-icon) > div.mb-4 {
+    display: contents;
+}
+
+#\32 fa-container > div:has(.failure-icon) > div.mb-4 > div.w-full:has(.failure-icon) {
+    grid-column: 1;
+    grid-row: 1;
     width: auto;
 }
 
-#\32 fa-container div.mb-4:has(.failure-icon) #rate-limit-countdown {
-    order: 3;
+#\32 fa-container > div:has(.failure-icon) > p {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    color: var(--foreground);
+    font-size: 0.9375rem;
+    line-height: 1.5;
 }
 
-/* "Retry" under a failed method: a small neutral outlined button. */
+#\32 fa-container > div:has(.failure-icon) > div.mb-4 > div:has(> [data-variant="ghost"]) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    margin-top: 1.25rem;
+}
+
+#\32 fa-container > div:has(.failure-icon) #rate-limit-countdown {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 0.75rem;
+}
+
+#\32 fa-container > div:has(.failure-icon) .failure-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.5rem;
+}
+
+/* "Retry": the main action of a failed method, styled like "Register device". */
 #\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"] {
-    height: 2.25rem;
-    padding-inline: 1rem;
-    border: 1px solid var(--input);
-    color: var(--foreground);
+    height: 2.5rem;
+    padding-inline: 1.25rem;
+    border-radius: var(--radius-md);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
     font-size: 0.875rem;
     font-weight: 500;
+    box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.1),
+        0 1px 0 oklch(1 0 0 / 0.15) inset;
 }
 
 #\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"]:hover {
-    background-color: var(--muted);
+    background-color: color-mix(in oklch, var(--primary) 88%, black);
 }
 
 /* ---------- Settings top bar: translucent instead of a solid color ---------- */
