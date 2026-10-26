@@ -66,7 +66,7 @@ a {
 .min-h-\[90vh\] > div:first-child {
     padding: 2.75rem 2.5rem 2.25rem;
     border: 1px solid var(--border);
-    border-radius: calc(var(--radius) + 6px);
+    border-radius: calc(var(--radius) + 4px);
     background-color: var(--card);
     color: var(--card-foreground);
     box-shadow: var(--theme-panel-shadow);
@@ -101,7 +101,7 @@ a {
     width: 3.5rem;
     height: 3.5rem;
     margin: 0.25rem auto 0.75rem;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     background:
         radial-gradient(
             circle at 50% 1.375rem,
@@ -111,13 +111,13 @@ a {
         ),
         linear-gradient(
             135deg,
-            color-mix(in oklch, var(--primary) 80%, white),
+            color-mix(in oklch, var(--primary) 88%, white),
             var(--primary) 55%,
             color-mix(in oklch, var(--primary) 70%, oklch(0.55 0.25 320))
         );
     box-shadow:
         0 1px 0 oklch(1 0 0 / 0.25) inset,
-        0 8px 24px -8px color-mix(in oklch, var(--primary) 70%, transparent);
+        0 4px 12px -4px color-mix(in oklch, var(--primary) 55%, transparent);
 }
 
 /* Padlock body with its keyhole, laid over the tile. */
@@ -128,10 +128,10 @@ a {
     left: 50%;
     width: 1.5rem;
     height: 1.125rem;
-    border-radius: 0.3125rem;
+    border-radius: 0.25rem;
     background:
-        linear-gradient(var(--primary), var(--primary)) 50% 0.6875rem / 0.125rem 0.25rem no-repeat,
-        radial-gradient(circle at 50% 0.5rem, var(--primary) 0 0.16rem, transparent 0.19rem),
+        linear-gradient(var(--primary), var(--primary)) 50% 0.5rem / 0.125rem 0.3rem no-repeat,
+        radial-gradient(circle at 50% 0.45rem, var(--primary) 0 0.17rem, transparent 0.2rem),
         var(--primary-foreground);
     transform: translateX(-50%);
 }
@@ -172,15 +172,31 @@ a {
 }
 
 #\32 fa-container.state-not-registered > div {
-    gap: 0.25rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-content: center;
+    align-items: center;
+    column-gap: 0.875rem;
+    row-gap: 0.125rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid color-mix(in oklch, var(--primary) 22%, transparent);
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklch, var(--primary) 6%, transparent);
+    text-align: left;
+}
+
+#\32 fa-container.state-not-registered > div > div:has(.information-icon) {
+    grid-row: span 2;
+    align-self: start;
+    margin: 0;
 }
 
 #\32 fa-container .information-icon {
-    width: 3rem;
-    height: 3rem;
-    padding: 0.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0.5rem;
     border-radius: 9999px;
-    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+    background-color: color-mix(in oklch, var(--primary) 14%, transparent);
     color: var(--primary);
 }
 
@@ -190,11 +206,10 @@ a {
 }
 
 #\32 fa-container.state-not-registered p {
-    max-width: 30ch;
-    margin-inline: auto;
+    margin: 0;
     color: var(--muted-foreground);
     font-size: 0.875rem;
-    line-height: 1.5;
+    line-height: 1.45;
 }
 
 #\32 fa-container.state-not-registered p:first-of-type {
@@ -474,6 +489,47 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
 
 #change-password-button {
     margin-top: 0.5rem;
+}
+
+/* Second factor: wider card, flatter method panel and a segmented toolbar. */
+#second-factor-stage > div.max-w-\[444px\] {
+    max-width: 34rem;
+}
+
+#second-factor-stage .rounded-\[10px\].border {
+    width: 100%;
+    padding: 1.5rem;
+    border-color: var(--border);
+    border-radius: var(--radius-md);
+}
+
+/* The "Logout | Methods" row: the literal pipes are hidden with font-size 0. */
+#second-factor-stage div:has(> #logout-button) {
+    display: flex;
+    width: fit-content;
+    margin-inline: auto;
+    padding: 0.25rem;
+    gap: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius-md) + 0.25rem);
+    background-color: var(--muted);
+    font-size: 0;
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
+    height: 2.25rem;
+    padding-inline: 1rem;
+    border-radius: var(--radius-md);
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
+    background-color: var(--card);
+    color: var(--foreground);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.08);
 }
 
 /* ---------- Scrollbars ---------- */

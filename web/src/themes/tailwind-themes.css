@@ -51,7 +51,7 @@
     --input: oklch(0.871 0.006 286.286);
     --ring: oklch(0.511 0.262 276.966);
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --custom-icon: oklch(0.21 0.006 285.885);
     --custom-loading-bar: oklch(0.511 0.262 276.966);
@@ -100,7 +100,7 @@
     --input: oklch(1 0 0 / 0.14);
     --ring: oklch(0.673 0.182 276.935);
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --custom-icon: oklch(0.985 0 0);
     --custom-loading-bar: oklch(0.673 0.182 276.935);
