@@ -1,0 +1,1215 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Authelia
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Visual overrides for a minimal, modern look.
+ *
+ * This file only contains presentation rules: it changes no markup, no
+ * behavior and no logic. It is intentionally NOT wrapped in a cascade layer so
+ * that its rules take precedence over the Tailwind CSS utility classes used by
+ * the components. Colors come from the tokens in tailwind-themes.css, so every
+ * theme (light, dark, grey, oled) picks these rules up automatically.
+ *
+ * Note: Authelia's Content-Security-Policy only allows resources from 'self',
+ * so this file deliberately relies on locally installed system fonts and never
+ * loads remote assets.
+ *
+ * Contents:
+ *   1. Theme variables
+ *   2. Base
+ *   3. Buttons
+ *   4. Inputs
+ *   5. Surfaces: cards, dialogs, menus, tooltips, toasts, icon badges
+ *   6. Login and minimal layouts (card, padlock icon, first factor form)
+ *   7. Second factor
+ *   8. Dialogs
+ *   9. Settings
+ */
+
+/* ---------- 1. Theme variables ---------- */
+:root,
+[data-theme="light"] {
+    --theme-panel-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 12px 32px -12px oklch(0 0 0 / 0.12);
+}
+
+[data-theme="dark"],
+[data-theme="grey"],
+[data-theme="oled"] {
+    --theme-panel-shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 24px 48px -24px oklch(0 0 0 / 0.6);
+}
+
+:root {
+    --theme-button-shadow: 0 1px 2px oklch(0 0 0 / 0.1), 0 1px 0 oklch(1 0 0 / 0.15) inset;
+    --theme-primary-hover: color-mix(in oklch, var(--primary) 88%, black);
+    --theme-destructive-hover: color-mix(in oklch, var(--destructive) 88%, black);
+    --theme-hover-border: color-mix(in oklch, var(--foreground) 18%, var(--border));
+}
+
+/* ---------- 2. Base ---------- */
+body {
+    font-family:
+        "Inter",
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "Arial",
+        sans-serif;
+    font-feature-settings: "cv11", "ss01";
+    letter-spacing: -0.006em;
+    background-color: var(--background);
+    background-image: radial-gradient(
+        ellipse 80% 50% at 50% -10%,
+        color-mix(in oklch, var(--primary) 12%, transparent),
+        transparent 70%
+    );
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+::selection {
+    background-color: color-mix(in oklch, var(--primary) 25%, transparent);
+}
+
+a {
+    text-underline-offset: 3px;
+}
+
+* {
+    scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
+    scrollbar-width: thin;
+}
+
+/* Pointer cursor on interactive elements. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="checkbox"],
+[role="radio"],
+[role="switch"],
+[role="menuitem"],
+[role="tab"],
+a[href],
+label[for],
+select,
+summary {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+/* ---------- 3. Buttons ----------
+ * The Button component may be re-tagged by wrappers (e.g. tooltips), so it is
+ * matched both by its data-slot and by its distinctive base classes.
+ */
+:is([data-slot="button"], .inline-flex.uppercase) {
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease,
+        transform 150ms ease;
+}
+
+/* Default size: taller and bolder. */
+:is([data-slot="button"], .inline-flex.uppercase).h-10 {
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+:is([data-slot="button"], .inline-flex.uppercase):active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+:is([data-slot="button"], .inline-flex.uppercase).border:not(.bg-primary, .bg-secondary, .bg-destructive) {
+    background-color: transparent;
+}
+
+/*
+ * Solid primary actions: primary buttons, plus the actions this theme
+ * promotes to it ("Register device", "Retry", the main action of a dialog).
+ */
+:is([data-slot="button"], .inline-flex.uppercase).bg-primary,
+#register-link,
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"],
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child) {
+    box-shadow: var(--theme-button-shadow);
+}
+
+:is([data-slot="button"], .inline-flex.uppercase).bg-primary:hover:not(:disabled),
+#register-link:hover,
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"]:hover,
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child):hover:not(:disabled) {
+    background-color: var(--theme-primary-hover);
+}
+
+/*
+ * Neutral outlined secondary actions: passkey sign in, the reset password
+ * "Cancel", secondary dialog actions (Previous, Cancel...) and the method
+ * selection "Close" button.
+ */
+#passkey-sign-in-button,
+#cancel-button,
+[data-slot="dialog-footer"] > [data-variant="ghost"],
+[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"] {
+    border: 1px solid var(--input);
+    background-color: transparent;
+    color: var(--foreground);
+    box-shadow: none;
+}
+
+#passkey-sign-in-button:hover:not(:disabled),
+#cancel-button:hover:not(:disabled),
+[data-slot="dialog-footer"] > [data-variant="ghost"]:hover:not(:disabled),
+[data-slot="dialog-content"]:has(#methods-dialog) [data-slot="dialog-footer"] > [data-variant="default"]:hover {
+    background-color: var(--muted);
+}
+
+/* ---------- 4. Inputs ---------- */
+[data-slot="floating-input"],
+[data-slot="input"],
+[data-slot="input-group"] {
+    border-radius: var(--radius-md);
+    background-color: var(--card);
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+[data-slot="floating-input"]:hover:not(:focus, :disabled),
+[data-slot="input"]:hover:not(:focus, :disabled) {
+    border-color: color-mix(in oklch, var(--foreground) 30%, var(--input));
+}
+
+[data-slot="floating-input"]:focus,
+[data-slot="input"]:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 18%, transparent);
+}
+
+/* Stand-alone labels placed above a field (reset password, one-time code...). */
+[data-slot="label"]:has(+ [data-slot="input"]) {
+    display: block;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+[data-slot="checkbox"] {
+    border-radius: 0.3rem;
+}
+
+/* ---------- 5. Surfaces ---------- */
+[data-slot="card"] {
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.04);
+}
+
+[data-slot="dialog-content"],
+[data-slot="sheet-content"],
+[data-slot="dropdown-menu-content"] {
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 2px);
+    box-shadow: 0 16px 40px -12px oklch(0 0 0 / 0.25);
+}
+
+[data-slot="sheet-content"] {
+    border-radius: 0;
+}
+
+[data-slot="dialog-overlay"],
+[data-slot="sheet-overlay"] {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+/* Tooltips are hidden everywhere: the button labels already say what they do. */
+[data-slot="tooltip-content"] {
+    display: none;
+}
+
+/* Toasts: neutral card, only the icon (in a tinted badge) carries the color. */
+[data-slot="toast-viewport"] {
+    width: 380px;
+}
+
+[data-slot="toast"] {
+    gap: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 2px);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    font-size: 0.875rem;
+    box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.06),
+        0 12px 32px -12px oklch(0 0 0 / 0.35);
+}
+
+[data-slot="toast"] > span:first-child {
+    width: 1.875rem;
+    height: 1.875rem;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--toast-accent) 14%, transparent);
+    color: var(--toast-accent);
+}
+
+[data-slot="toast-title"] {
+    line-height: 1.4;
+}
+
+/*
+ * Round icon badges: the info icon (second factor, dialogs) and the
+ * success / failure icons. The glyph keeps a normal stroke inside a tinted
+ * circle of its color.
+ */
+:is(#\32 fa-container, [data-slot="dialog-content"]) .information-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.625rem;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+}
+
+:is(#\32 fa-container, [data-slot="dialog-content"]) .information-icon > :is(path, circle) {
+    scale: 1;
+}
+
+#\32 fa-container :is(.failure-icon, .success-icon) {
+    --status: var(--destructive);
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background-color: color-mix(in oklch, var(--status) 12%, transparent);
+    color: var(--status);
+    stroke-width: 1.25;
+}
+
+#\32 fa-container .success-icon {
+    --status: var(--success);
+}
+
+/* These glyphs are drawn small to fit in their own circle: drop the circle, enlarge the glyph. */
+#\32 fa-container :is(.failure-icon, .success-icon) > path {
+    scale: 2;
+}
+
+#\32 fa-container :is(.failure-icon, .success-icon) > circle {
+    display: none;
+}
+
+/* ---------- 6. Login and minimal layouts ---------- */
+
+/* The form is presented as a centered card. */
+.min-h-\[90vh\] > div:first-child {
+    padding: 2.75rem 2.5rem 2.25rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--theme-panel-shadow);
+}
+
+.min-h-\[90vh\] > div.max-w-\[444px\] {
+    max-width: 30rem;
+}
+
+/*
+ * The page fills the viewport below the top bar instead of 90vh under it, so
+ * it only scrolls when the content really doesn't fit (dvh: the visible area
+ * on mobile, browser toolbars excluded).
+ */
+div:has(> .min-h-\[90vh\]) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.min-h-\[90vh\] {
+    flex: 1 0 auto;
+    min-height: 0;
+}
+
+/* On small screens the card fills the viewport without its chrome. */
+@media (max-width: 480px) {
+    .min-h-\[90vh\] > div:first-child {
+        padding: 1rem 1.25rem;
+        border-color: transparent;
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+/* Page title and subtitle. */
+.min-h-\[90vh\] h5 {
+    margin-block: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.min-h-\[90vh\] h6 {
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Cards nested inside the login card (consent pages) become flat panels. */
+.min-h-\[90vh\] [data-slot="card"] {
+    border-color: var(--border);
+    background-color: var(--muted);
+    box-shadow: none;
+}
+
+/* Hide the "Powered by" link (and its separator when a privacy policy link follows). */
+.min-h-\[90vh\] a[href*="authelia.com"],
+.min-h-\[90vh\] a[href*="authelia.com"] + [data-slot="separator"] {
+    display: none;
+}
+
+/* A custom logo.png keeps its own image. */
+.min-h-\[90vh\] img.w-16 {
+    width: 3rem;
+    height: 3rem;
+}
+
+/*
+ * The default account silhouette is replaced by a padlock on a gradient tile,
+ * drawn in pure CSS (no image: the CSP blocks data: URIs). Every size is in
+ * rem so the glyph stays aligned with the tile at any font size.
+ */
+.min-h-\[90vh\] svg.w-16 {
+    display: none;
+}
+
+.min-h-\[90vh\] div:has(> svg.w-16) {
+    position: relative;
+}
+
+/* Tile with the padlock shackle (a ring whose lower half is hidden by the body). */
+.min-h-\[90vh\] div:has(> svg.w-16)::before {
+    content: "";
+    display: block;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0.25rem auto 0.75rem;
+    border-radius: 0.75rem;
+    background:
+        radial-gradient(
+            circle at 50% 1.375rem,
+            transparent 0 0.28rem,
+            var(--primary-foreground) 0.31rem 0.47rem,
+            transparent 0.5rem
+        ),
+        linear-gradient(
+            135deg,
+            color-mix(in oklch, var(--primary) 88%, white),
+            var(--primary) 55%,
+            color-mix(in oklch, var(--primary) 70%, oklch(0.55 0.25 320))
+        );
+    box-shadow:
+        0 1px 0 oklch(1 0 0 / 0.25) inset,
+        0 4px 12px -4px color-mix(in oklch, var(--primary) 55%, transparent);
+}
+
+/* Padlock body with its keyhole (circle and slot on the same axis), laid over the tile. */
+.min-h-\[90vh\] div:has(> svg.w-16)::after {
+    content: "";
+    position: absolute;
+    top: calc(0.5rem + 0.25rem + 1.5625rem);
+    left: 50%;
+    width: 1.5rem;
+    height: 1.125rem;
+    border-radius: 0.25rem;
+    background:
+        linear-gradient(
+                to right,
+                transparent calc(50% - 0.0625rem),
+                var(--primary) calc(50% - 0.0625rem) calc(50% + 0.0625rem),
+                transparent calc(50% + 0.0625rem)
+            )
+            0 0.5rem / 100% 0.3rem no-repeat,
+        radial-gradient(circle at 50% 0.45rem, var(--primary) 0 0.17rem, transparent calc(0.17rem + 0.5px)),
+        var(--primary-foreground);
+    transform: translateX(-50%);
+}
+
+/* First factor form: even vertical rhythm instead of negative margins. */
+#form-login > .grid {
+    gap: 1.25rem;
+}
+
+#form-login .-my-2 {
+    margin-block: 0;
+}
+
+#form-login [data-slot="label"],
+#form-login :is(#reset-password-button, #register-button) {
+    font-size: 0.9375rem;
+}
+
+#form-login :is(#reset-password-button, #register-button) {
+    padding-block: 0.25rem;
+    font-weight: 500;
+}
+
+#form-login #sign-in-button {
+    height: 3rem;
+    font-size: 1rem;
+}
+
+/* Reset password forms: breathing room between rows. */
+[id^="form-reset-password"] .grid {
+    gap: 1.25rem;
+}
+
+/* ---------- 7. Second factor ---------- */
+
+/* A single, slightly wider card with no nested frames. */
+#second-factor-stage > div.max-w-\[444px\] {
+    max-width: 32rem;
+}
+
+#second-factor-stage .rounded-\[10px\].border {
+    width: 100%;
+    margin-block: 1.25rem 0;
+    padding: 1.5rem 0 0;
+    border-width: 1px 0 0;
+    border-color: var(--border);
+    border-radius: 0;
+}
+
+/* Method title. */
+.min-h-\[90vh\] h6:has(+ #\32 fa-container) {
+    color: var(--foreground);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/*
+ * "Logout | Methods": equal-width neutral buttons spanning the card (the
+ * literal pipes are hidden with font-size 0).
+ */
+#second-factor-stage div:has(> #logout-button) {
+    display: flex;
+    font-size: 0;
+}
+
+#second-factor-stage div:has(> #logout-button) > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+#second-factor-stage div:has(> #logout-button) > * + * {
+    margin-left: 0.625rem;
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
+    height: auto;
+    min-height: 2.5rem;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--border);
+    background-color: var(--muted);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25;
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-wrap: balance;
+    box-shadow: none;
+}
+
+/*
+ * With "Switch User" there are three buttons: tighter on phones, and a long
+ * label ("Changer d'utilisateur") wraps onto two lines instead of overflowing.
+ */
+@media (max-width: 480px) {
+    #second-factor-stage div:has(> #logout-button) > * + * {
+        margin-left: 0.5rem;
+    }
+
+    #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
+        padding-inline: 0.5rem;
+    }
+}
+
+@media (max-width: 380px) {
+    #second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase) {
+        padding-inline: 0.375rem;
+        font-size: 0.8125rem;
+    }
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):hover {
+    border-color: var(--theme-hover-border);
+    background-color: color-mix(in oklch, var(--foreground) 5%, var(--muted));
+}
+
+#second-factor-stage div:has(> #logout-button) > :is([data-slot="button"], .inline-flex.uppercase):focus-visible {
+    outline: 2px solid color-mix(in oklch, var(--ring) 60%, transparent);
+    outline-offset: 2px;
+}
+
+/*
+ * "Device not registered" and "method failed" messages share one layout:
+ * the icon badge beside the text, the action button centered below.
+ */
+#\32 fa-container.state-not-registered {
+    height: auto;
+    min-height: 0;
+    padding-block: 1rem 0.5rem;
+}
+
+:is(#\32 fa-container.state-not-registered, #\32 fa-container:has(.failure-icon:not(.hidden *))) > div {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-content: center;
+    align-items: center;
+    column-gap: 0.875rem;
+    max-width: 24rem;
+    margin-inline: auto;
+    text-align: left;
+}
+
+:is(#\32 fa-container.state-not-registered, #\32 fa-container:has(.failure-icon:not(.hidden *))) > div > p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+/* Not registered: the method title is redundant with the message. */
+.min-h-\[90vh\] h6:has(+ #\32 fa-container.state-not-registered) {
+    display: none;
+}
+
+#\32 fa-container.state-not-registered > div {
+    row-gap: 0.125rem;
+}
+
+#\32 fa-container.state-not-registered > div > div:has(.information-icon) {
+    grid-row: span 2;
+    align-self: start;
+    margin: 0;
+}
+
+#\32 fa-container.state-not-registered > div > p {
+    color: var(--muted-foreground);
+}
+
+#\32 fa-container.state-not-registered > div > p:first-of-type {
+    margin-bottom: 0.25rem;
+    color: var(--foreground);
+    font-size: 1.0625rem;
+    font-weight: 500;
+}
+
+/*
+ * The method's own block (OTP digits, WebAuthn hand, push phone...) always
+ * takes its own line above the explanation, whatever the card width.
+ */
+#\32 fa-container.state-method > div > div.mb-4 {
+    display: flex;
+    flex-basis: 100%;
+    justify-content: center;
+}
+
+/* Failed: no fixed height, the message and "Retry" set the height. */
+#\32 fa-container:has(.failure-icon:not(.hidden *)) {
+    height: auto;
+    padding-block: 1.25rem 0.25rem;
+}
+
+/* Failed: the wrapper of the icon and the "Retry" button is flattened onto the grid. */
+#\32 fa-container:has(.failure-icon:not(.hidden *)) > div > div.mb-4 {
+    display: contents;
+}
+
+#\32 fa-container:has(.failure-icon:not(.hidden *)) > div > div.mb-4 > div.w-full:has(.failure-icon) {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+}
+
+#\32 fa-container:has(.failure-icon:not(.hidden *)) > div > p {
+    grid-column: 2;
+    grid-row: 1;
+    color: var(--foreground);
+}
+
+#\32 fa-container:has(.failure-icon:not(.hidden *)) > div > div.mb-4 > div:has(> [data-variant="ghost"]) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    margin-top: 1.25rem;
+}
+
+/* WebAuthn "touch your key" hand: drawn in the text color instead of hardcoded black. */
+#\32 fa-container svg[viewBox="0 0 500 500"] path {
+    fill: var(--foreground);
+    stroke: var(--foreground);
+}
+
+/* WebAuthn nests the icon and "Retry" one level deeper: flattened onto the same grid. */
+#\32 fa-container:has(.failure-icon:not(.hidden *)) > div > div.mb-4 > .inline-block,
+#\32 fa-container:has(.failure-icon:not(.hidden *)) > div > div.mb-4 > .inline-block > div:not(.hidden) {
+    display: contents;
+}
+
+#\32 fa-container:has(.failure-icon:not(.hidden *)) > div > div.mb-4 > .inline-block > div > div:has(.failure-icon) {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#\32
+    fa-container:has(.failure-icon:not(.hidden *))
+    > div
+    > div.mb-4
+    > .inline-block
+    > div
+    > div:has(> [data-variant="ghost"]) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    margin-top: 1.25rem;
+}
+
+#\32 fa-container:has(.failure-icon:not(.hidden *)) #rate-limit-countdown {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 0.75rem;
+}
+
+/* Already authenticated: the check badge beside its label, without the fixed height. */
+#\32 fa-container.state-already-authenticated {
+    height: auto;
+    padding-block: 1.25rem 0.25rem;
+}
+
+#\32 fa-container #authenticated-stage {
+    flex-direction: row;
+    gap: 0.75rem;
+}
+
+#\32 fa-container #authenticated-stage > div {
+    display: flex;
+    margin: 0;
+}
+
+#\32 fa-container #authenticated-stage > p {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+/* One-time code: every digit box is outlined, like the other fields. */
+#otp-input input {
+    width: 2.75rem;
+    height: 3rem;
+    border-color: color-mix(in oklch, var(--foreground) 20%, transparent);
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+    font-weight: 500;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+#otp-input input:hover:not(:focus-visible, :disabled) {
+    border-color: color-mix(in oklch, var(--foreground) 32%, transparent);
+}
+
+#otp-input input:focus-visible {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 18%, transparent);
+}
+
+#otp-input input[aria-invalid="true"] {
+    border-color: var(--destructive);
+}
+
+/*
+ * One-time code timer (the method dialog keeps its own colors): a tinted badge
+ * with the elapsed time in the primary color, neutral white on dark themes.
+ */
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) {
+    --timer: var(--primary);
+}
+
+:is([data-theme="dark"], [data-theme="grey"], [data-theme="oled"])
+    #\32
+    fa-container
+    svg:has(> circle[r="9"] + circle[r="5"]) {
+    --timer: var(--foreground);
+}
+
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) > circle[r="12"] {
+    stroke: color-mix(in oklch, var(--timer) 25%, transparent);
+    stroke-width: 1.5;
+}
+
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) > circle[r="9"] {
+    fill: color-mix(in oklch, var(--timer) 10%, transparent);
+}
+
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) > circle[r="5"] {
+    stroke: var(--timer);
+}
+
+#\32 fa-container svg:has(> circle[r="9"] + circle[r="5"]) {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+/* "Register device" and "Retry": solid primary actions (shadow and hover in section 3). */
+#register-link,
+#\32 fa-container div:has(> [data-variant="ghost"]) > [data-variant="ghost"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    padding-inline: 1.25rem;
+    border-radius: var(--radius-md);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+#register-link {
+    margin-top: 1rem;
+    transition: background-color 150ms ease;
+}
+
+#register-link:hover {
+    text-decoration: none;
+}
+
+/* Push notification: the link exists without a label; it is not drawn as an empty button. */
+#register-link:empty {
+    display: none;
+}
+
+#selection-link {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Method selection dialog: neutral option rows with an icon badge. */
+#methods-dialog .method-option > :is([data-slot="button"], .inline-flex.uppercase) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    height: auto;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--foreground);
+    text-align: left;
+    box-shadow: none;
+}
+
+#methods-dialog .method-option > :is([data-slot="button"], .inline-flex.uppercase):hover {
+    border-color: var(--theme-hover-border);
+    background-color: var(--muted);
+}
+
+#methods-dialog .method-option .fill-white {
+    display: grid;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: 0;
+    place-items: center;
+    border-radius: var(--radius-md);
+    background-color: var(--primary);
+}
+
+#methods-dialog .method-option .fill-white svg {
+    width: 1.625rem !important;
+    height: 1.625rem !important;
+}
+
+#methods-dialog .method-option p {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.35;
+    white-space: normal;
+}
+
+#methods-dialog .method-option > :is([data-slot="button"], .inline-flex.uppercase) > div:last-child {
+    min-width: 0;
+}
+
+/* ---------- 8. Dialogs ---------- */
+
+/* A dialog never grows past the viewport: its content scrolls instead (long WebAuthn details on a phone). */
+[data-slot="dialog-content"] {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* Narrow dialogs are widened a little. */
+[data-slot="dialog-content"].sm\:max-w-xs {
+    max-width: min(26rem, calc(100% - 2rem));
+}
+
+/* Steppers: a thin rule and some space between the steps and the step content. */
+[data-slot="dialog-content"] [data-slot="stepper"] {
+    margin-bottom: 0.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+[data-slot="dialog-content"] .py-8 {
+    padding-block: 0.75rem 1rem;
+}
+
+[data-slot="dialog-content"] p.pb-8 {
+    padding-bottom: 1.25rem;
+    font-size: 0.9375rem;
+}
+
+/* Steps with an info icon: the icon beside its text, the form full width below. */
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 0.875rem;
+    text-align: left;
+}
+
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > * {
+    grid-column: 1 / -1;
+}
+
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > .py-8 {
+    grid-column: 1;
+    padding-block: 1rem;
+}
+
+[data-slot="dialog-content"] div:has(> .py-8 > .information-icon) > p.pb-8 {
+    grid-column: 2;
+    padding-block: 1rem;
+}
+
+/*
+ * Footer: secondary actions are neutral outlined buttons (section 3), the
+ * main (last) action is a solid button, red when it is destructive.
+ */
+[data-slot="dialog-footer"] {
+    gap: 0.5rem;
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"] {
+    height: 2.5rem;
+    padding-inline: 1.125rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"]:last-child:not(:only-child) {
+    border-color: transparent;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child) {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
+[data-slot="dialog-footer"] > [data-variant="ghost"].text-destructive:last-child:not(:only-child):hover:not(:disabled) {
+    background-color: var(--theme-destructive-hover);
+}
+
+/* ---------- 9. Settings ---------- */
+
+/* Top bar: translucent instead of a solid color. */
+nav.fixed.bg-primary {
+    border-bottom: 1px solid var(--border);
+    background-color: color-mix(in oklch, var(--background) 80%, transparent);
+    color: var(--foreground);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+}
+
+nav.fixed.bg-primary .text-primary-foreground {
+    color: var(--foreground);
+}
+
+nav.fixed.bg-primary h6 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* Security: a full-viewport block under the top bar padding made the page scroll for nothing. */
+nav.fixed.bg-primary ~ main > .h-screen {
+    height: auto;
+}
+
+/* Centered content column. */
+nav.fixed.bg-primary ~ main {
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+}
+
+/* Every panel shares the same inner padding and type scale. */
+nav.fixed.bg-primary ~ main [data-slot="card"] {
+    padding-block: 0;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"] {
+    padding: 1.5rem 1.75rem;
+}
+
+nav.fixed.bg-primary ~ main h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+nav.fixed.bg-primary ~ main p {
+    font-size: 0.9375rem;
+}
+
+/* Overview: left-aligned title and muted text. */
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4),
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > :is(h4, p) {
+    text-align: left;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card-content"]:has(> h4) > p {
+    margin-block: 0.25rem;
+    color: var(--muted-foreground);
+}
+
+/* Security: one even padding around the account details. */
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) {
+    width: min(28rem, 100%);
+    padding: 1.75rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) > div,
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) > div > div {
+    margin: 0;
+    padding: 0;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rounded.border {
+    margin-bottom: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-color: var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+}
+
+#change-password-button {
+    margin-top: 0.5rem;
+}
+
+/*
+ * Two-Factor Authentication panels: a compact row with the title and the
+ * description on the left, the "Add" button on the right and the registered
+ * devices full width below.
+ */
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 1.5rem;
+    row-gap: 0.375rem;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > * {
+    grid-column: 1 / -1;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* The button spans the description row only when there is a description. */
+:is(#one-time-password-panel, #webauthn-credentials-panel)
+    > [data-slot="card-content"]:has(> :nth-child(3) > p)
+    > :nth-child(2) {
+    grid-row: 1 / span 2;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(3):has(> p) {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel)
+    > [data-slot="card-content"]
+    > :nth-child(n + 3):not(:has(> p)) {
+    margin-top: 0.75rem;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) p.text-muted-foreground {
+    line-height: 1.5;
+}
+
+/*
+ * Method icon beside the panel title, as in the method selection dialog. Static
+ * SVG files served by Authelia (the CSP blocks data: URIs, hence `?no-inline`).
+ */
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(1) h5 {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(1) h5::before {
+    content: "";
+    flex: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    background: url("./icons/method-totp.svg?no-inline") center / 1.5rem no-repeat var(--primary);
+}
+
+#webauthn-credentials-panel > [data-slot="card-content"] > :nth-child(1) h5::before {
+    background-image: url("./icons/method-webauthn.svg?no-inline");
+}
+
+/*
+ * "Add": the panel's main action, solid like the other primary actions instead
+ * of an indigo outline; disabled (one OTP only), a plain muted button.
+ */
+:is(#one-time-password-add, #webauthn-credential-add) {
+    border-color: transparent;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--theme-button-shadow);
+}
+
+:is(#one-time-password-add, #webauthn-credential-add):hover:not(:disabled) {
+    background-color: var(--theme-primary-hover);
+    color: var(--primary-foreground);
+}
+
+:is(#one-time-password-add, #webauthn-credential-add):disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    box-shadow: none;
+    opacity: 1;
+}
+
+/* WebAuthn credentials: full-width rows like the One-Time Password, not a grid of narrow tiles. */
+#webauthn-credentials-panel [data-slot="card-content"] .grid-cols-12 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* The fingerprint is drawn in the text color like the OTP icon; amber stays for the warning triangle. */
+[id^="webauthn-credential-"] .shrink-0 > svg {
+    color: var(--foreground);
+}
+
+/* The attestation format ("(NONE)"...) reads like an error; it stays in the information dialog. */
+[id^="webauthn-credential-"] [id$="-description"] + span {
+    display: none;
+}
+
+/*
+ * Options panel: one row per setting (account default, then this browser's
+ * default), separated by a rule, with the choices on a single line each.
+ */
+nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) .grid.p-4 {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) .grid.p-4 > div + div {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has([id^="method-"]) [data-slot="radio-group"] {
+    flex-wrap: wrap;
+    gap: 0.625rem 1.75rem;
+}
+
+nav.fixed.bg-primary ~ main [id^="method-"] [data-slot="label"] {
+    white-space: nowrap;
+}
+
+/*
+ * "WebAuthn disabled" panel. While the configuration loads, the app briefly
+ * renders it alone; once loaded, the One-Time Password or the Options panel is
+ * always next to it. It is hidden while it is the only panel, so it never
+ * flashes, whatever the load time.
+ */
+nav.fixed.bg-primary
+    ~ main
+    .grid:not(:has(#one-time-password-panel, [id^="method-"]))
+    [data-slot="card"]:has(.col-span-12.text-center > h6) {
+    display: none;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) > [data-slot="card-content"] {
+    row-gap: 0.5rem;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) .text-center {
+    text-align: left;
+}
+
+nav.fixed.bg-primary ~ main [data-slot="card"]:has(.col-span-12.text-center > h6) :is(h6, p) {
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 400;
+}
+
+/* Small screens: keep a gutter so the cards don't touch the edges. */
+@media (max-width: 639px) {
+    /* The top bar is taller than the space the page keeps for it (56px). */
+    nav.fixed.bg-primary ~ main {
+        padding: 4.5rem 0.75rem 1rem;
+    }
+
+    /* Security: no extra top padding, the main area already clears the top bar. */
+    nav.fixed.bg-primary ~ main > .h-screen.pt-16 {
+        padding-top: 0;
+    }
+
+    nav.fixed.bg-primary ~ main [data-slot="card-content"] {
+        padding: 1.25rem;
+    }
+}
