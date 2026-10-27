@@ -1105,6 +1105,29 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
     background-image: url("./icons/method-webauthn.svg?no-inline");
 }
 
+/*
+ * "Add": the panel's main action, solid like the other primary actions instead
+ * of an indigo outline; disabled (one OTP only), a plain muted button.
+ */
+:is(#one-time-password-add, #webauthn-credential-add) {
+    border-color: transparent;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--theme-button-shadow);
+}
+
+:is(#one-time-password-add, #webauthn-credential-add):hover:not(:disabled) {
+    background-color: var(--theme-primary-hover);
+    color: var(--primary-foreground);
+}
+
+:is(#one-time-password-add, #webauthn-credential-add):disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    box-shadow: none;
+    opacity: 1;
+}
+
 /* WebAuthn credentials: full-width rows like the One-Time Password, not a grid of narrow tiles. */
 #webauthn-credentials-panel [data-slot="card-content"] .grid-cols-12 {
     display: flex;
