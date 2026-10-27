@@ -1082,6 +1082,29 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
     line-height: 1.5;
 }
 
+/*
+ * Method icon beside the panel title, as in the method selection dialog. Static
+ * SVG files served by Authelia (the CSP blocks data: URIs, hence `?no-inline`).
+ */
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(1) h5 {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+:is(#one-time-password-panel, #webauthn-credentials-panel) > [data-slot="card-content"] > :nth-child(1) h5::before {
+    content: "";
+    flex: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    background: url("./icons/method-totp.svg?no-inline") center / 1.5rem no-repeat var(--primary);
+}
+
+#webauthn-credentials-panel > [data-slot="card-content"] > :nth-child(1) h5::before {
+    background-image: url("./icons/method-webauthn.svg?no-inline");
+}
+
 /* WebAuthn credentials: full-width rows like the One-Time Password, not a grid of narrow tiles. */
 #webauthn-credentials-panel [data-slot="card-content"] .grid-cols-12 {
     display: flex;
