@@ -1135,6 +1135,11 @@ nav.fixed.bg-primary ~ main [data-slot="card"]:has(#change-password-button) .rou
     gap: 0.75rem;
 }
 
+/* The fingerprint is drawn in the text color like the OTP icon; amber stays for the warning triangle. */
+[id^="webauthn-credential-"] .shrink-0 > svg {
+    color: var(--foreground);
+}
+
 /* The attestation format ("(NONE)"...) reads like an error; it stays in the information dialog. */
 [id^="webauthn-credential-"] [id$="-description"] + span {
     display: none;
